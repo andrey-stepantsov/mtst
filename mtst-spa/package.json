@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "generate-standards": "node scripts/generate-standards-data.js"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^19.1.1",
@@ -24,7 +23,6 @@
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
     "typescript": "^5.5.4",
-    "vite": "^7.1.7",
-    "csv-parser": "^3.0.0"
+    "vite": "^7.1.7"
   }
 }
