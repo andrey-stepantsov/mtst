@@ -1,0 +1,49 @@
+.controls-grid {
+  display: grid;
+  /* Define columns for Age, Gender, Course, Event, and Add button */
+  /* Adjust column widths as needed for desired spacing and alignment */
+  grid-template-columns: auto auto auto 1fr auto; /* Example: auto for labels/selects, 1fr for event select, auto for button */
+  gap: 20px; /* Space between grid items */
+  align-items: end; /* Align items to the bottom of their grid area */
+  margin-bottom: 20px;
+}
+
+.controls-grid > div {
+  display: flex;
+  flex-direction: column;
+  /* Ensure labels are above their controls */
+}
+
+.controls-grid label {
+  margin-bottom: 5px; /* Space between label and its control */
+  font-weight: bold;
+}
+
+/* Style for the selected events container */
+.selected-events-container {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.selected-events-container h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.selected-event-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+  padding: 5px;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+}
+
+.selected-event-item span {
+  flex-grow: 1; /* Allow event name to take available space */
+}

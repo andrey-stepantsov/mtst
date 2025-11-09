@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import './AppGrid.css'; // Import the new CSS file
 
 const ALL_EVENTS = [
   "50 FR", "100 FR", "200 FR", "500 FR", "1000 FR", "1650 FR",
@@ -52,9 +53,9 @@ function App() {
   return (
     <>
       <div className="card">
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'flex-end' }}>
+        <div className="controls-grid">
           <div>
-            <label htmlFor="age-select">Age: </label>
+            <label htmlFor="age-select">Age:</label>
             <select id="age-select">
               {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
                 <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
@@ -63,7 +64,7 @@ function App() {
           </div>
 
           <div>
-            <label htmlFor="gender-select">Gender: </label>
+            <label htmlFor="gender-select">Gender:</label>
             <select id="gender-select">
               <option value="Boys">Boys</option>
               <option value="Girls">Girls</option>
@@ -71,17 +72,15 @@ function App() {
           </div>
 
           <div>
-            <label htmlFor="course-select">Course: </label>
+            <label htmlFor="course-select">Course:</label>
             <select id="course-select">
               <option value="SCY">SCY</option>
               <option value="LCM">LCM</option>
             </select>
           </div>
-        </div>
 
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'flex-end' }}>
           <div>
-            <label htmlFor="event-select">Event: </label>
+            <label htmlFor="event-select">Event:</label>
             <select id="event-select" ref={eventSelectRef} disabled={availableEvents.length === 0}>
               {availableEvents.length > 0 ? (
                 availableEvents.map((event) => (
@@ -92,13 +91,14 @@ function App() {
               )}
             </select>
           </div>
-          <button onClick={handleAddEvent} disabled={availableEvents.length === 0}>Add</button>
+          {/* The Add button is a direct child of the grid to align with the event select */}
+          <button onClick={handleAddEvent} disabled={availableEvents.length === 0} style={{ alignSelf: 'end' }}>Add</button>
         </div>
 
         <div className="selected-events-container">
           {selectedEvents.length > 0 && <h3>Selected Events:</h3>}
           {selectedEvents.map((event) => (
-            <div key={event} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '5px' }}>
+            <div key={event} className="selected-event-item">
               <span>{event}</span>
               <button onClick={() => handleRemoveEvent(event)}>Remove</button>
             </div>
