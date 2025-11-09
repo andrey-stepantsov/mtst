@@ -5,8 +5,8 @@ function App() {
         <div style={{ marginBottom: '10px' }}>
           <label htmlFor="age-select">Age: </label>
           <select id="age-select">
-            {Array.from({ length: 13 }, (_, i) => i + 6).map((age) => (
-              <option key={age} value={age}>{age}</option>
+            {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
+              <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
             ))}
           </select>
         </div>
