@@ -24,30 +24,44 @@ const ALL_EVENTS = [
   return lengthA - lengthB;
 });
 
+interface SelectedEvent {
+  name: string;
+  time: string; // Duration in mm:ss.ff format
+}
+
 function App() {
   const [availableEvents, setAvailableEvents] = useState(ALL_EVENTS);
-  const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
+  const [selectedEvents, setSelectedEvents] = useState<SelectedEvent[]>([]);
   const eventSelectRef = useRef<HTMLSelectElement>(null);
 
   const handleAddEvent = () => {
     if (eventSelectRef.current) {
-      const eventToAdd = eventSelectRef.current.value;
-      if (eventToAdd && !selectedEvents.includes(eventToAdd)) {
-        setSelectedEvents((prev) => [...prev, eventToAdd]);
-        setAvailableEvents((prev) => prev.filter((event) => event !== eventToAdd));
+      const eventNameToAdd = eventSelectRef.current.value;
+      if (eventNameToAdd && !selectedEvents.some(e => e.name === eventNameToAdd)) {
+        setSelectedEvents((prev) => [...prev, { name: eventNameToAdd, time: '' }]);
+        setAvailableEvents((prev) => prev.filter((event) => event !== eventNameToAdd));
         // Optionally reset the dropdown to the first available option or a placeholder
-        if (availableEvents.length > 1) { // If there are other events left
-          eventSelectRef.current.value = availableEvents.filter(event => event !== eventToAdd)[0];
-        } else { // If no events left, set to empty or disable
+        const remainingEvents = availableEvents.filter(event => event !== eventNameToAdd);
+        if (remainingEvents.length > 0) {
+          eventSelectRef.current.value = remainingEvents[0];
+        } else {
           eventSelectRef.current.value = '';
         }
       }
     }
   };
 
-  const handleRemoveEvent = (eventToRemove: string) => {
-    setSelectedEvents((prev) => prev.filter((event) => event !== eventToRemove));
-    setAvailableEvents((prev) => [...prev, eventToRemove].sort());
+  const handleRemoveEvent = (eventToRemoveName: string) => {
+    setSelectedEvents((prev) => prev.filter((event) => event.name !== eventToRemoveName));
+    setAvailableEvents((prev) => [...prev, eventToRemoveName].sort());
+  };
+
+  const handleTimeChange = (eventName: string, newTime: string) => {
+    setSelectedEvents((prev) =>
+      prev.map((event) =>
+        event.name === eventName ? { ...event, time: newTime } : event
+      )
+    );
   };
 
   return (
@@ -98,9 +112,17 @@ function App() {
         <div className="selected-events-container">
           {selectedEvents.length > 0 && <h3>Selected Events:</h3>}
           {selectedEvents.map((event) => (
-            <div key={event} className="selected-event-item">
-              <span>{event}</span>
-              <button onClick={() => handleRemoveEvent(event)}>Remove</button>
+            <div key={event.name} className="selected-event-item">
+              <span>{event.name}</span>
+              <input
+                type="text"
+                value={event.time}
+                onChange={(e) => handleTimeChange(event.name, e.target.value)}
+                placeholder="mm:ss.ff"
+                title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
+                style={{ width: '100px', textAlign: 'center' }}
+              />
+              <button onClick={() => handleRemoveEvent(event.name)}>Remove</button>
             </div>
           ))}
         </div>
