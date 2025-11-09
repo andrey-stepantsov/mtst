@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import './AppGrid.css'; // Import the new CSS file
+import standardsData from '../public/standards.json';
 
 // Define types for the standards data
 interface StandardTime {
@@ -61,24 +62,10 @@ function App() {
   const [course, setCourse] = useState("SCY"); // Default to SCY
 
   // State for loaded standards data
-  const [standards, setStandards] = useState<AgeGroupStandards | null>(null);
-
-  // Load standards data from public/standards.json
-  useEffect(() => {
-    fetch('/standards.json')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => setStandards(data))
-      .catch(error => console.error("Failed to load standards data:", error));
-  }, []); // Empty dependency array means this runs once on mount
+  const [standards, setStandards] = useState<AgeGroupStandards>(standardsData);
 
   // Helper function to get standards for a specific event based on current filters
   const getEventStandards = (eventName: string): StandardTime | undefined => {
-    if (!standards) return undefined;
 
     // Map UI values to data keys
     const ageGroupKey = age === "10&U" ? "01-10" : age; // "10&U" -> "01-10"
