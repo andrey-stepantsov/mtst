@@ -1,14 +1,27 @@
 import { useState, useRef } from 'react';
 
-const EVENT_GROUPS = {
-  "FR": ["50 FR", "100 FR", "200 FR", "500 FR", "1000 FR", "1650 FR"],
-  "BK": ["50 BK", "100 BK", "200 BK"],
-  "BR": ["50 BR", "100 BR", "200 BR"],
-  "FL": ["50 FL", "100 FL", "200 FL"],
-  "IM": ["100 IM", "200 IM", "400 IM"]
-};
+const ALL_EVENTS = [
+  "50 FR", "100 FR", "200 FR", "500 FR", "1000 FR", "1650 FR",
+  "50 BK", "100 BK", "200 BK",
+  "50 BR", "100 BR", "200 BR",
+  "50 FL", "100 FL", "200 FL",
+  "100 IM", "200 IM", "400 IM"
+].sort((a, b) => {
+  const getPostfix = (event: string) => event.split(' ').pop() || '';
+  const getLength = (event: string) => parseInt(event.split(' ')[0]) || 0;
 
-const ALL_EVENTS = Object.values(EVENT_GROUPS).flat().sort(); // Keep events sorted for consistent display
+  const postfixA = getPostfix(a);
+  const postfixB = getPostfix(b);
+
+  // Sort by postfix first
+  if (postfixA < postfixB) return -1;
+  if (postfixA > postfixB) return 1;
+
+  // If postfixes are the same, sort by length
+  const lengthA = getLength(a);
+  const lengthB = getLength(b);
+  return lengthA - lengthB;
+});
 
 function App() {
   const [availableEvents, setAvailableEvents] = useState(ALL_EVENTS);
@@ -71,14 +84,8 @@ function App() {
             <label htmlFor="event-select">Event: </label>
             <select id="event-select" ref={eventSelectRef} disabled={availableEvents.length === 0}>
               {availableEvents.length > 0 ? (
-                Object.entries(EVENT_GROUPS).map(([groupName, eventsInGroup]) => (
-                  <optgroup key={groupName} label={groupName}>
-                    {eventsInGroup
-                      .filter(event => availableEvents.includes(event))
-                      .map((event) => (
-                        <option key={event} value={event}>{event}</option>
-                      ))}
-                  </optgroup>
+                availableEvents.map((event) => (
+                  <option key={event} value={event}>{event}</option>
                 ))
               ) : (
                 <option value="" disabled>No events available</option>
