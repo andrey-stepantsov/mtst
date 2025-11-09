@@ -1,5 +1,26 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './AppGrid.css'; // Import the new CSS file
+
+// Define types for the standards data
+interface StandardTime {
+  Event: string;
+  A: string;
+  AA: string;
+  AAA: string;
+  AAAA: string;
+}
+
+interface CourseStandards {
+  [course: string]: StandardTime[]; // e.g., "LCM": [{Event: "50 FR", ...}]
+}
+
+interface GenderStandards {
+  [gender: string]: CourseStandards; // e.g., "Female": {"LCM": [...]}
+}
+
+interface AgeGroupStandards {
+  [ageGroup: string]: GenderStandards; // e.g., "01-10": {"Female": {...}}
+}
 
 const ALL_EVENTS = [
   "50 FR", "100 FR", "200 FR", "500 FR", "1000 FR", "1650 FR",
@@ -33,6 +54,40 @@ function App() {
   const [availableEvents, setAvailableEvents] = useState(ALL_EVENTS);
   const [selectedEvents, setSelectedEvents] = useState<SelectedEvent[]>([]);
   const eventSelectRef = useRef<HTMLSelectElement>(null);
+
+  // State for filter selections
+  const [age, setAge] = useState("10&U"); // Default to first age group
+  const [gender, setGender] = useState("Girls"); // Default to Girls
+  const [course, setCourse] = useState("SCY"); // Default to SCY
+
+  // State for loaded standards data
+  const [standards, setStandards] = useState<AgeGroupStandards | null>(null);
+
+  // Load standards data from public/standards.json
+  useEffect(() => {
+    fetch('/standards.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => setStandards(data))
+      .catch(error => console.error("Failed to load standards data:", error));
+  }, []); // Empty dependency array means this runs once on mount
+
+  // Helper function to get standards for a specific event based on current filters
+  const getEventStandards = (eventName: string): StandardTime | undefined => {
+    if (!standards) return undefined;
+
+    // Map UI values to data keys
+    const ageGroupKey = age === "10&U" ? "01-10" : age; // "10&U" -> "01-10"
+    const genderKey = gender === "Boys" ? "Male" : "Female"; // "Boys" -> "Male", "Girls" -> "Female"
+    const courseKey = course;
+
+    const currentStandards = standards[ageGroupKey]?.[genderKey]?.[courseKey];
+    return currentStandards?.find(s => s.Event === eventName);
+  };
 
   const handleAddEvent = () => {
     if (eventSelectRef.current) {
@@ -70,7 +125,7 @@ function App() {
         <div className="controls-grid">
           <div>
             <label htmlFor="age-select">Age:</label>
-            <select id="age-select">
+            <select id="age-select" value={age} onChange={(e) => setAge(e.target.value)}>
               {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
                 <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
               ))}
@@ -79,7 +134,7 @@ function App() {
 
           <div>
             <label htmlFor="gender-select">Gender:</label>
-            <select id="gender-select">
+            <select id="gender-select" value={gender} onChange={(e) => setGender(e.target.value)}>
               <option value="Boys">Boys</option>
               <option value="Girls">Girls</option>
             </select>
@@ -87,7 +142,7 @@ function App() {
 
           <div>
             <label htmlFor="course-select">Course:</label>
-            <select id="course-select">
+            <select id="course-select" value={course} onChange={(e) => setCourse(e.target.value)}>
               <option value="SCY">SCY</option>
               <option value="LCM">LCM</option>
             </select>
@@ -111,20 +166,33 @@ function App() {
 
         <div className="selected-events-container">
           {selectedEvents.length > 0 && <h3>Selected Events:</h3>}
-          {selectedEvents.map((event) => (
-            <div key={event.name} className="selected-event-item">
-              <span>{event.name}</span>
-              <input
-                type="text"
-                value={event.time}
-                onChange={(e) => handleTimeChange(event.name, e.target.value)}
-                placeholder="mm:ss.ff"
-                title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
-                style={{ width: '100px', textAlign: 'center' }}
-              />
-              <button onClick={() => handleRemoveEvent(event.name)}>Remove</button>
-            </div>
-          ))}
+          {selectedEvents.map((event) => {
+            const eventStandards = getEventStandards(event.name);
+            return (
+              <div key={event.name} className="selected-event-item">
+                <span>{event.name}</span>
+                <input
+                  type="text"
+                  value={event.time}
+                  onChange={(e) => handleTimeChange(event.name, e.target.value)}
+                  placeholder="mm:ss.ff"
+                  title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
+                  style={{ width: '100px', textAlign: 'center' }}
+                />
+                {eventStandards ? (
+                  <div className="standards-display">
+                    <span>A: {eventStandards.A}</span>
+                    <span>AA: {eventStandards.AA}</span>
+                    <span>AAA: {eventStandards.AAA}</span>
+                    <span>AAAA: {eventStandards.AAAA}</span>
+                  </div>
+                ) : (
+                  <span className="standards-display">Standards not found</span>
+                )}
+                <button onClick={() => handleRemoveEvent(event.name)}>Remove</button>
+              </div>
+            );
+          })}
         </div>
       </div>
     </>
