@@ -110,6 +110,8 @@
 
 /* NEW: Style for grid cells */
 .grid-cell {
+  display: flex;
+  align-items: center;
   padding: 8px 0;
   border-bottom: 1px solid #eee;
   min-width: 0; /* Prevents content from overflowing grid cell */
@@ -122,7 +124,7 @@
 
 /* NEW: Center the content of the action cell */
 .grid-cell:last-child {
-  text-align: center;
+  justify-content: center;
 }
 
 /* Adjust input width for better display */
