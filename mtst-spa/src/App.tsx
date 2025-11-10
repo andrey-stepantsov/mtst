@@ -656,7 +656,7 @@ function App() {
                   onChange={(e) => handleTimeChange(event.name, e.target.value)}
                   placeholder="mm:ss.ff"
                   title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
-                  style={{ width: '100px', textAlign: 'center' }}
+                  style={{ width: '90px', textAlign: 'center', padding: '5px', border: '1px solid #ccc', borderRadius: '3px' }}
                 />
                 {eventStandards ? (
                   <>
