@@ -115,6 +115,7 @@
   align-items: center;
   border-radius: 4px;
   padding: 0 8px;
+  color: #212529; /* Set a dark text color for visibility against light backgrounds */
 }
 
 /* NEW: Style for grid headers */
@@ -162,6 +163,8 @@
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 3px;
+  background-color: #fff;
+  color: #212529;
 }
 
 /* NEW: Styles for alternating row colors */
