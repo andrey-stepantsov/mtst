@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect, Fragment } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSwipeable } from 'react-swipeable';
 import './AppGrid.css';
 import { SelectedEvent, StandardTime } from './types';
 import { ALL_EVENTS } from './constants';
@@ -117,11 +118,16 @@ function App() {
         <div className="grid-header">Action</div>
 
         {events.map((event) => {
+          const handlers = useSwipeable({
+            onSwipedLeft: () => handleRemoveEvent(course, event.name),
+            trackMouse: true,
+          });
+
           const eventStandards = getEventStandards(event.name, standards);
           const cutInfo = getCutInfo(event.time, eventStandards);
 
           return (
-            <Fragment key={event.name}>
+            <div key={event.name} {...handlers} style={{ display: 'contents' }}>
               <div className="grid-cell event-name-cell">{event.name}</div>
               <div className="grid-cell">
                 <input
@@ -140,11 +146,9 @@ function App() {
                   : 'N/A'}
               </div>
               <div className="grid-cell action-cell">
-                <button onClick={() => handleRemoveEvent(course, event.name)} className="icon-button remove-button" title={`Remove ${course} event`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
+                <span className="swipe-hint" title="Swipe left to delete">&larr;</span>
               </div>
-            </Fragment>
+            </div>
           );
         })}
       </div>
