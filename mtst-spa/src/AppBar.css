@@ -7,11 +7,34 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   width: 100%;
   box-sizing: border-box;
-  text-align: left;
+  /* text-align: left; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .app-bar h1 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
+}
+
+.swimmer-name-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.swimmer-name-container label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.swimmer-name-container input {
+  background-color: #333;
+  border: 1px solid #555;
+  color: #fff;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
 }

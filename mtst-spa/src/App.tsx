@@ -78,10 +78,24 @@ const EventRow = ({
   );
 };
 
-const AppBar = () => {
+interface AppBarProps {
+  swimmerName: string;
+  onSwimmerNameChange: (name: string) => void;
+}
+
+const AppBar = ({ swimmerName, onSwimmerNameChange }: AppBarProps) => {
   return (
     <header className="app-bar">
       <h1>MTST</h1>
+      <div className="swimmer-name-container">
+        <label htmlFor="app-bar-swimmer-name">Swimmer Name:</label>
+        <input
+          id="app-bar-swimmer-name"
+          type="text"
+          value={swimmerName}
+          onChange={(e) => onSwimmerNameChange(e.target.value)}
+        />
+      </div>
     </header>
   );
 };
@@ -91,7 +105,7 @@ function App() {
 
   // State for filter selections
   const initialFilters = loadUserFilters();
-  const [swimmerName, setSwimmerName] = useState(initialFilters.swimmerName || "Swimmer");
+  const [swimmerName, setSwimmerName] = useState(initialFilters.swimmerName || "swimmer");
   const [age, setAge] = useState(initialFilters.age || "10&U");
   const [gender, setGender] = useState(initialFilters.gender || "Girls");
 
@@ -217,19 +231,10 @@ function App() {
 
   return (
     <>
-      <AppBar />
+      <AppBar swimmerName={swimmerName} onSwimmerNameChange={setSwimmerName} />
       <main className="main-content">
         <div className="card">
           <div className="top-controls">
-            <div>
-              <label htmlFor="swimmer-name-input">Swimmer Name:</label>
-              <input
-                id="swimmer-name-input"
-                type="text"
-                value={swimmerName}
-                onChange={(e) => setSwimmerName(e.target.value)}
-              />
-            </div>
             <div>
               <label htmlFor="age-select">Age:</label>
               <select id="age-select" value={age} onChange={(e) => setAge(e.target.value)}>
