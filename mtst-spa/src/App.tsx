@@ -29,9 +29,14 @@ const EventRow = ({
   handleTimeChange,
   getEventStandards,
 }: EventRowProps) => {
+  const isMobile = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }, []);
+
   const handlers = useSwipeable({
     onSwipedLeft: () => handleRemoveEvent(course, event.name),
-    trackMouse: true,
+    disabled: !isMobile,
   });
 
   const eventStandards = getEventStandards(event.name, standards);
@@ -57,7 +62,13 @@ const EventRow = ({
           : 'N/A'}
       </div>
       <div className="grid-cell action-cell">
-        <span className="swipe-hint" title="Swipe left to delete">&larr;</span>
+        {isMobile ? (
+          <span className="swipe-hint" title="Swipe left to delete">&larr;</span>
+        ) : (
+          <button onClick={() => handleRemoveEvent(course, event.name)} className="icon-button remove-button" title={`Remove ${course} event`}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        )}
       </div>
     </div>
   );

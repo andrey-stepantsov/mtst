@@ -39,6 +39,14 @@
   background-color: #e9f5ec; /* Light green background */
 }
 
+.remove-button {
+  color: #dc3545; /* Red */
+}
+
+.remove-button:hover {
+  background-color: #f8d7da; /* Light red background */
+}
+
 
 
 .top-controls > div {
