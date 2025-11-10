@@ -70,18 +70,20 @@ const secondsToTimeString = (totalSeconds: number): string => {
   return `${formattedMinutes}:${formattedSeconds}.${formattedHundredths}`;
 };
 
-// NEW: Interface for the detailed next cut information
-interface NextCutInfo {
-  message: string;
+// NEW: Interface for the detailed cut information
+interface CutInfo {
+  achievedCut: string;
+  nextCut: string | null;
   absoluteDiff: string | null; // e.g., "-00:01.23"
   relativeDiff: string | null; // e.g., "-1.5%"
 }
 
-// MODIFIED: Helper function to determine the next cut and differences
-const getNextCut = (bestTime: string, standards: StandardTime | undefined): NextCutInfo => {
+// MODIFIED: Helper function to determine the current and next cut, and differences
+const getCutInfo = (bestTime: string, standards: StandardTime | undefined): CutInfo => {
   if (!standards) {
     return {
-      message: "Standards not found for this event.",
+      achievedCut: "N/A",
+      nextCut: "Standards not found.",
       absoluteDiff: null,
       relativeDiff: null,
     };
@@ -91,61 +93,77 @@ const getNextCut = (bestTime: string, standards: StandardTime | undefined): Next
 
   if (userTimeInSeconds === Infinity) {
     return {
-      message: "Enter a valid time (mm:ss.ff)",
+      achievedCut: "N/A",
+      nextCut: "Enter a valid time (mm:ss.ff)",
       absoluteDiff: null,
       relativeDiff: null,
     };
   }
 
-  // Convert all standard cuts to seconds for comparison
-  const bCut = timeToSeconds(standards.B);
-  const bbCut = timeToSeconds(standards.BB);
-  const aCut = timeToSeconds(standards.A);
-  const aaCut = timeToSeconds(standards.AA);
-  const aaaCut = timeToSeconds(standards.AAA);
-  const aaaaCut = timeToSeconds(standards.AAAA);
+  const cuts = [
+    { level: 'AAAA', time: timeToSeconds(standards.AAAA), timeStr: standards.AAAA },
+    { level: 'AAA', time: timeToSeconds(standards.AAA), timeStr: standards.AAA },
+    { level: 'AA', time: timeToSeconds(standards.AA), timeStr: standards.AA },
+    { level: 'A', time: timeToSeconds(standards.A), timeStr: standards.A },
+    { level: 'BB', time: timeToSeconds(standards.BB), timeStr: standards.BB },
+    { level: 'B', time: timeToSeconds(standards.B), timeStr: standards.B },
+  ].filter(cut => cut.time !== Infinity); // Filter out invalid/missing standards
 
-  let nextCutLevel: string;
-  let nextCutTimeInSeconds: number;
-
-  // Determine the next cut level
-  // If userTime > bCut, it means the user's time is slower than the B cut, so B is the next target.
-  if (userTimeInSeconds > bCut) {
-    nextCutLevel = `B (${standards.B})`;
-    nextCutTimeInSeconds = bCut;
-  } else if (userTimeInSeconds > bbCut) {
-    nextCutLevel = `BB (${standards.BB})`;
-    nextCutTimeInSeconds = bbCut;
-  } else if (userTimeInSeconds > aCut) {
-    nextCutLevel = `A (${standards.A})`;
-    nextCutTimeInSeconds = aCut;
-  } else if (userTimeInSeconds > aaCut) {
-    nextCutLevel = `AA (${standards.AA})`;
-    nextCutTimeInSeconds = aaCut;
-  } else if (userTimeInSeconds > aaaCut) {
-    nextCutLevel = `AAA (${standards.AAA})`;
-    nextCutTimeInSeconds = aaaCut;
-  } else if (userTimeInSeconds > aaaaCut) {
-    nextCutLevel = `AAAA (${standards.AAAA})`;
-    nextCutTimeInSeconds = aaaaCut;
-  } else {
-    // User has achieved AAAA or faster
+  if (cuts.length === 0) {
     return {
-      message: "Achieved all cuts!",
+      achievedCut: "N/A",
+      nextCut: "No valid standards for this event.",
       absoluteDiff: null,
       relativeDiff: null,
     };
   }
 
-  // Calculate differences
-  // timeToImproveInSeconds will always be positive here, as userTimeInSeconds is slower than nextCutTimeInSeconds
-  const timeToImproveInSeconds = userTimeInSeconds - nextCutTimeInSeconds;
+  let achievedCutLevel: string = "None";
+  let nextCutIndex = -1;
+
+  // Find the highest standard the user has achieved
+  for (let i = 0; i < cuts.length; i++) {
+    if (userTimeInSeconds <= cuts[i].time) {
+      achievedCutLevel = cuts[i].level;
+      nextCutIndex = i - 1; // The next goal is the one at the previous index (faster)
+      break;
+    }
+  }
+
+  // Case 1: Slower than the slowest standard (e.g., 'B' cut)
+  if (achievedCutLevel === "None") {
+    const nextCut = cuts[cuts.length - 1]; // The slowest cut is the next goal
+    const timeToImproveInSeconds = userTimeInSeconds - nextCut.time;
+    const relativeImprovementPercentage = (timeToImproveInSeconds / userTimeInSeconds) * 100;
+
+    return {
+      achievedCut: "None",
+      nextCut: `${nextCut.level} (${nextCut.timeStr})`,
+      absoluteDiff: `-${secondsToTimeString(timeToImproveInSeconds)}`,
+      relativeDiff: `-${relativeImprovementPercentage.toFixed(1)}%`,
+    };
+  }
+
+  // Case 2: Achieved the fastest standard ('AAAA')
+  if (nextCutIndex < 0) {
+    return {
+      achievedCut: achievedCutLevel, // Will be 'AAAA'
+      nextCut: 'Achieved all cuts!',
+      absoluteDiff: null,
+      relativeDiff: null,
+    };
+  }
+
+  // Case 3: In between standards
+  const nextCut = cuts[nextCutIndex];
+  const timeToImproveInSeconds = userTimeInSeconds - nextCut.time;
   const relativeImprovementPercentage = (timeToImproveInSeconds / userTimeInSeconds) * 100;
 
   return {
-    message: `Next Cut: ${nextCutLevel}`,
-    absoluteDiff: `-${secondsToTimeString(timeToImproveInSeconds)}`, // Prepend '-' as it's an improvement
-    relativeDiff: `-${relativeImprovementPercentage.toFixed(1)}%`, // Prepend '-' as it's an improvement
+    achievedCut: achievedCutLevel,
+    nextCut: `${nextCut.level} (${nextCut.timeStr})`,
+    absoluteDiff: `-${secondsToTimeString(timeToImproveInSeconds)}`,
+    relativeDiff: `-${relativeImprovementPercentage.toFixed(1)}%`,
   };
 };
 
@@ -377,7 +395,7 @@ function App() {
           {selectedEvents.length > 0 && <h3>Selected Events:</h3>}
           {selectedEvents.map((event) => {
             const eventStandards = getEventStandards(event.name);
-            const nextCutInfo = getNextCut(event.time, eventStandards); // ADDED THIS LINE
+            const cutInfo = getCutInfo(event.time, eventStandards);
 
             return (
               <div key={event.name} className="selected-event-item">
@@ -389,12 +407,15 @@ function App() {
                   placeholder="mm:ss.ff"
                   title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
                 />
-                {/* NEW: Call getNextCut once and store the result */}
                 <div className="next-cut-display">
-                  <span>{nextCutInfo.message}</span>
-                  {/* NEW: Conditionally display differences if available */}
-                  {nextCutInfo.absoluteDiff && nextCutInfo.relativeDiff && (
-                    <span className="time-diff"> ({nextCutInfo.absoluteDiff} / {nextCutInfo.relativeDiff})</span>
+                  <span>Current: {cutInfo.achievedCut}</span>
+                  {cutInfo.nextCut && (
+                    <span style={{ marginLeft: '10px' }}>
+                      Next: {cutInfo.nextCut}
+                      {cutInfo.absoluteDiff && cutInfo.relativeDiff && (
+                        <span className="time-diff"> ({cutInfo.absoluteDiff} / {cutInfo.relativeDiff})</span>
+                      )}
+                    </span>
                   )}
                 </div>
                 <button onClick={() => handleRemoveEvent(event.name)}>Remove</button>
