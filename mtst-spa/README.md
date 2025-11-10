@@ -1,16 +1,48 @@
-# React + Vite
+# Montana Swimming Time Standards Calculator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A single-page application to help swimmers and coaches easily check swimming times against the official Montana Swimming time standards for various age groups and courses.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Select age group and gender to view relevant standards.
+- Add swimming events for both Short Course Yards (SCY) and Long Course Meters (LCM).
+- Enter a time for an event to see which standard ("cut") has been achieved.
+- Calculates and displays the time difference to the next higher standard.
+- Your selected events and times are saved in your browser for your next visit.
 
-## React Compiler
+## Development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This project was bootstrapped with [Vite](https://vitejs.dev/) and [React](https://react.dev/).
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Node.js (v18 or later recommended)
+- npm
+
+### Getting Started
+
+1.  Clone the repository and navigate into the `mtst-spa` directory.
+
+2.  Install dependencies:
+    ```sh
+    npm install
+    ```
+
+3.  Run the development server:
+    ```sh
+    npm run dev
+    ```
+    The application will be available at `http://localhost:5173`.
+
+### Managing Standards Data
+
+The swimming time standards are sourced from CSV files located in the `standards/` directory at the root of the repository.
+
+To update the standards:
+
+1.  Place the new or updated CSV files in the `standards/` directory. The file naming convention is important for the data generation script.
+2.  Run the script to process the CSVs and generate the JSON data used by the application:
+    ```sh
+    npm run generate-standards
+    ```
+    This script will parse the CSV files and output JSON files into the `mtst-spa/public/standards/` directory.
