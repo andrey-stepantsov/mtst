@@ -74,7 +74,7 @@ export const getCutInfo = (bestTime: string, standards: StandardTime | undefined
   if (userTimeInSeconds === Infinity) {
     return {
       achievedCut: "N/A",
-      nextCut: "Enter a valid time (mm:ss.ff)",
+      nextCut: "N/A",
       absoluteDiff: null,
       relativeDiff: null,
     };
