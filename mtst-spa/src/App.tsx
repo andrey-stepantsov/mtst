@@ -178,7 +178,7 @@ function App() {
         <div className="grid-header-wrapper">
           <div className="grid-header">Event</div>
           <div className="grid-header">Time</div>
-          <div className="grid-header">Current Cut</div>
+          <div className="grid-header">My Cut</div>
           <div className="grid-header">Next Cut</div>
           <div className="grid-header">Difference</div>
           <div className="grid-header">Action</div>
