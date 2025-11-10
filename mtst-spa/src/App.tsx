@@ -14,6 +14,8 @@ import {
   saveUserFilters,
 } from './utils/persistence';
 
+const AGE_BRACKETS = ["10&U", "11-12", "13-14"];
+
 interface EventRowProps {
   course: 'SCY' | 'LCM';
   index: number;
@@ -101,7 +103,7 @@ const AppBar = ({ swimmerName, age, gender, onEdit }: AppBarProps) => {
       <div className="app-bar-control">
         <label htmlFor="app-bar-age-select">Age:</label>
         <select id="app-bar-age-select" value={age} disabled>
-          {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
+          {AGE_BRACKETS.map((ageBracket) => (
             <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
           ))}
         </select>
@@ -160,7 +162,7 @@ const Profile = ({ isOpen, onClose, onConfirm, currentProfile }: ProfileProps) =
         <div className="profile-control">
           <label htmlFor="profile-age">Age:</label>
           <select id="profile-age" value={age} onChange={(e) => setAge(e.target.value)}>
-            {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
+            {AGE_BRACKETS.map((ageBracket) => (
               <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
             ))}
           </select>
@@ -184,7 +186,11 @@ function App() {
   // State for filter selections
   const initialFilters = loadUserFilters();
   const [swimmerName, setSwimmerName] = useState(initialFilters.swimmerName || "swimmer");
-  const [age, setAge] = useState(initialFilters.age || "10&U");
+  const [age, setAge] = useState(
+    initialFilters.age && AGE_BRACKETS.includes(initialFilters.age)
+      ? initialFilters.age
+      : "10&U"
+  );
   const [gender, setGender] = useState(initialFilters.gender || "Girls");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // New state for modal visibility
 
