@@ -108,6 +108,9 @@
   padding-bottom: 8px;
   border-bottom: 2px solid #ccc;
   text-align: left;
+  min-height: 2.5em; /* Reserve space for text wrapping */
+  display: flex;
+  align-items: flex-end;
 }
 
 /* NEW: Style for grid cells */
