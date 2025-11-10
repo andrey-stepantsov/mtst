@@ -1,4 +1,39 @@
+# Aider
 .aider*
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+/node_modules/
+mtst-spa/node_modules/
+
+# Build output
+mtst-spa/dist/
+mtst-spa/dist-ssr/
+
+# Environment variables
 .env
+*.local
+
+# Generated standards data (if any)
+# This rule is for a potential aggregated file that is not currently generated.
+mtst-spa/public/standards.json
+
+# OS-generated files
 .DS_Store
-node_modules/
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.bak
