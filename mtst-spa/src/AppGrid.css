@@ -48,13 +48,24 @@
   flex-grow: 1; /* Allow event name to take available space */
 }
 
-/* NEW: Style for the next cut display */
+/* Modified: Make next-cut-display a flex container for better layout of its children */
 .next-cut-display {
+  display: flex; /* NEW */
+  align-items: center; /* NEW */
   font-weight: bold;
   color: #007bff; /* A distinct color for the next cut */
-  margin-left: 10px; /* Space it out from standards */
+  margin-left: 10px; /* Space it out from input */
   white-space: nowrap; /* Prevent wrapping for the next cut text */
 }
+
+/* NEW: Style for the time difference part */
+.next-cut-display .time-diff {
+  font-weight: normal; /* Make the diff text slightly less prominent */
+  color: #333; /* A more subdued color */
+  margin-left: 5px; /* Small gap between message and diff */
+  font-size: 0.9em; /* Slightly smaller font size */
+}
+
 
 /* Adjust input width for better display */
 .selected-event-item input[type="text"] {
