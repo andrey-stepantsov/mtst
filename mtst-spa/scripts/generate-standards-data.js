@@ -27,7 +27,6 @@ async function parseCsvFile(filePath) {
 }                                                                                                                                                                                     
                    
 async function generateStandardsData() {                                                                                                                                              
-    const standardsData = {};                                                                                                                                                         
     let files;                                                                                                                                                                        
     try {                                                                                                                                                                             
         files = await fs.promises.readdir(STANDARDS_DIR);                                                                                                                             
@@ -36,6 +35,9 @@ async function generateStandardsData() {
         return;                                                                                                                                                                       
     }                                                                                                                                                                                 
                                                                                                                                                                                       
+    // Ensure the output directory exists                                                                                                                                             
+    await fs.promises.mkdir(OUTPUT_DIR, { recursive: true });                                                                                                                         
+    console.log(`Ensured output directory exists: ${OUTPUT_DIR}`);                                                                                                                    
                                                                                                                                                                                       
     for (const file of files) {                                                                                                                                                       
         if (file.endsWith('.csv') && file !== 'all-2024-2028.csv') {                                                                                                                  
@@ -52,19 +54,14 @@ async function generateStandardsData() {
                 const gender = parts[2]; // e.g., "Female", "Male"                                                                                                                    
                 const course = parts[3]; // e.g., "LCM", "SCY"                                                                                                                        
                                                                                                                                                                                       
-                if (!standardsData[ageGroup]) {                                                                                                                                       
-                    standardsData[ageGroup] = {};                                                                                                                                     
-                }                                                                                                                                                                     
-                if (!standardsData[ageGroup][gender]) {                                                                                                                               
-                    standardsData[ageGroup][gender] = {};                                                                                                                             
-                }                                                                                                                                                                     
-                                                                                                                                                                                      
                 try {                                                                                                                                                                 
                     const records = await parseCsvFile(filePath);                                                                                                                     
-                    standardsData[ageGroup][gender][course] = records;                                                                                                                
-                    console.log(`Parsed ${file}`);                                                                                                                                    
+                    const outputFileName = `${ageGroup}-${gender}-${course}.json`;                                                                                                    
+                    const outputFilePath = path.join(OUTPUT_DIR, outputFileName);                                                                                                     
+                    await fs.promises.writeFile(outputFilePath, JSON.stringify(records, null, 2), 'utf8');                                                                            
+                    console.log(`Generated ${outputFileName}`);                                                                                                                       
                 } catch (error) {                                                                                                                                                     
-                    console.error(`Error parsing ${file}:`, error);                                                                                                                   
+                    console.error(`Error processing ${file}:`, error);                                                                                                                
                 }                                                                                                                                                                     
             } else {                                                                                                                                                                  
                 console.warn(`Skipping malformed filename: ${file}. Expected format: AGEGROUP-GENDER-COURSE-YEARS.csv`);                                                              
@@ -72,12 +69,7 @@ async function generateStandardsData() {
         }                                                                                                                                                                             
     }                                                                                                                                                                                 
                                                                                                                                                                                       
-    // Ensure the output directory exists                                                                                                                                             
-    const outputDir = path.dirname(OUTPUT_FILE);                                                                                                                                      
-    await fs.promises.mkdir(outputDir, { recursive: true });                                                                                                                          
-                                                                                                                                                                                      
-    await fs.promises.writeFile(OUTPUT_FILE, JSON.stringify(standardsData, null, 2), 'utf8');                                                                                         
-    console.log(`Standards data successfully generated and saved to ${OUTPUT_FILE}`);                                                                                                 
+    console.log(`Standards data generation complete.`);                                                                                                                               
 }                                                                                                                                                                                     
 
 generateStandardsData().catch(console.error);
