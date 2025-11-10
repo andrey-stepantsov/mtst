@@ -128,7 +128,7 @@ export const getCutInfo = (bestTime: string, standards: StandardTime | undefined
   if (nextCutIndex < 0) {
     return {
       achievedCut: achievedCutLevel, // Will be 'AAAA'
-      nextCut: 'Achieved all cuts!',
+      nextCut: 'MAX',
       absoluteDiff: null,
       relativeDiff: null,
     };
