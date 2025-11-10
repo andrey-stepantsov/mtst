@@ -61,7 +61,9 @@
 }
 
 .profile-confirm-button,
-.profile-new-button {
+.profile-new-button,
+.profile-close-button,
+.profile-delete-button {
   flex: 1;
   padding: 0.75rem;
   font-size: 1rem;
@@ -89,4 +91,33 @@
 
 .profile-new-button:hover {
   border-color: #777;
+}
+
+.profile-close-button {
+  background-color: #333;
+  color: rgba(255, 255, 255, 0.87);
+  border: 1px solid #555;
+}
+
+.profile-close-button:hover {
+  border-color: #777;
+}
+
+.profile-delete-button {
+  background-color: #991111;
+  color: white;
+  border: 1px solid #5c0000;
+}
+
+.profile-delete-button:hover {
+  background-color: #bb2222;
+  border-color: #777;
+}
+
+.profile-delete-button:disabled,
+.profile-delete-button:disabled:hover {
+  background-color: #444;
+  color: #888;
+  cursor: not-allowed;
+  border-color: #333;
 }
