@@ -129,9 +129,10 @@ interface ProfileProps {
   currentProfile: { swimmerName: string; age: string; gender: string };
   swimmerNames: string[];
   onSwitchProfile: (name: string) => void;
+  onNewSwimmer: () => void;
 }
 
-const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onSwitchProfile }: ProfileProps) => {
+const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onSwitchProfile, onNewSwimmer }: ProfileProps) => {
   const [name, setName] = useState(currentProfile.swimmerName);
   const [age, setAge] = useState(currentProfile.age);
   const [gender, setGender] = useState(currentProfile.gender);
@@ -148,6 +149,11 @@ const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onS
 
   const handleConfirm = () => {
     onConfirm({ swimmerName: name, age, gender });
+    onClose();
+  };
+
+  const handleNewSwimmerClick = () => {
+    onNewSwimmer();
     onClose();
   };
 
@@ -190,7 +196,10 @@ const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onS
             <option value="Girls">Girls</option>
           </select>
         </div>
-        <button onClick={handleConfirm} className="profile-confirm-button">Confirm</button>
+        <div className="profile-buttons-container">
+          <button onClick={handleNewSwimmerClick} className="profile-new-button">New Swimmer</button>
+          <button onClick={handleConfirm} className="profile-confirm-button">Update</button>
+        </div>
       </div>
     </div>
   );
@@ -204,11 +213,12 @@ function App() {
     if (savedName && profileKeys.includes(savedName)) {
       return savedName;
     }
-    return profileKeys[0] || 'swimmer'; // Fallback
+    // Fallback: if no saved name or saved name doesn't exist, use the first profile or 'swimmer'
+    return profileKeys.length > 0 ? profileKeys[0] : 'swimmer';
   });
 
   // Derived state for the active profile
-  const activeProfile = profiles[activeSwimmerName];
+  const activeProfile = profiles[activeSwimmerName] || { age: '10&U', gender: 'Girls', selectedEvents: { SCY: [], LCM: [] } }; // Provide a default if activeSwimmerName is not found
   const { age, gender, selectedEvents } = activeProfile;
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -324,6 +334,27 @@ function App() {
     setActiveSwimmerName(name);
   };
 
+  const handleNewSwimmer = () => {
+    setProfiles(prevProfiles => {
+      let newSwimmerName = `Swimmer ${Object.keys(prevProfiles).length + 1}`;
+      let counter = 2;
+      while (prevProfiles[newSwimmerName]) {
+        newSwimmerName = `Swimmer ${Object.keys(prevProfiles).length + counter}`;
+        counter++;
+      }
+
+      const newProfile = {
+        age: '10&U',
+        gender: 'Girls',
+        selectedEvents: { SCY: [], LCM: [] },
+      };
+
+      const newProfiles = { ...prevProfiles, [newSwimmerName]: newProfile };
+      setActiveSwimmerName(newSwimmerName);
+      return newProfiles;
+    });
+  };
+
   const handleProfileConfirm = (profileUpdate: { swimmerName: string; age: string; gender: string }) => {
     const { swimmerName: newName, age: newAge, gender: newGender } = profileUpdate;
     const oldName = activeSwimmerName;
@@ -409,6 +440,7 @@ function App() {
         currentProfile={{ swimmerName: activeSwimmerName, age, gender }}
         swimmerNames={Object.keys(profiles)}
         onSwitchProfile={handleSwitchProfile}
+        onNewSwimmer={handleNewSwimmer}
       />
       <main className="main-content">
         <div className="card">
