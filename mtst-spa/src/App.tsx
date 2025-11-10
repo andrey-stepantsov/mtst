@@ -181,7 +181,7 @@ function App() {
           <div className="grid-header">My Cut</div>
           <div className="grid-header">Next Cut</div>
           <div className="grid-header">Difference</div>
-          <div className="grid-header">Action</div>
+          <div className="grid-header"></div>
         </div>
 
         {events.map((event, index) => (
