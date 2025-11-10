@@ -4,19 +4,36 @@ import { SelectedEvent, StandardTime } from './types';
 import { ALL_EVENTS } from './constants';
 import { getCutInfo } from './utils/standards';
 import { useStandards } from './hooks/useStandards';
+import {
+  loadSelectedEvents,
+  saveSelectedEvents,
+  loadUserFilters,
+  saveUserFilters,
+} from './utils/persistence';
 
 function App() {
-  const [selectedEvents, setSelectedEvents] = useState<SelectedEvent[]>([]);
+  const [selectedEvents, setSelectedEvents] = useState<SelectedEvent[]>(loadSelectedEvents);
 
   // State for filter selections
-  const [age, setAge] = useState("10&U"); // Default to first age group
-  const [gender, setGender] = useState("Girls"); // Default to Girls
-  const [course, setCourse] = useState("SCY"); // Default to SCY
+  const initialFilters = loadUserFilters();
+  const [age, setAge] = useState(initialFilters.age || "10&U");
+  const [gender, setGender] = useState(initialFilters.gender || "Girls");
+  const [course, setCourse] = useState(initialFilters.course || "SCY");
 
   // NEW: State to manage the currently selected event in the dropdown
   const [selectedEventInDropdown, setSelectedEventInDropdown] = useState('');
 
   const { standardsForSelectedFilters, isLoading } = useStandards(age, gender, course);
+
+  // Persist selected events to localStorage
+  useEffect(() => {
+    saveSelectedEvents(selectedEvents);
+  }, [selectedEvents]);
+
+  // Persist filters to localStorage
+  useEffect(() => {
+    saveUserFilters({ age, gender, course });
+  }, [age, gender, course]);
 
   // Helper function to get standards for a specific event based on current filters
   const getEventStandards = (eventName: string): StandardTime | undefined => {
