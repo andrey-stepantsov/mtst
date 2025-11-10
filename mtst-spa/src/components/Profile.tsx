@@ -77,6 +77,7 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
         </div>
         <div className="profile-buttons-container">
           <button onClick={handleNewSwimmerClick} className="profile-new-button">New Swimmer</button>
+          <button onClick={onClose} className="profile-close-button">Close</button>
           <button onClick={handleConfirm} className="profile-confirm-button">Update</button>
         </div>
       </div>
