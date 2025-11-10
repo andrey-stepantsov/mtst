@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import './AppGrid.css'; // Import the new CSS file
 
 // Define types for the standards data
@@ -474,7 +474,6 @@ interface SelectedEvent {
 }
 
 function App() {
-  const [availableEvents, setAvailableEvents] = useState(ALL_EVENTS);
   const [selectedEvents, setSelectedEvents] = useState<SelectedEvent[]>([]);
   const eventSelectRef = useRef<HTMLSelectElement>(null);
 
@@ -487,7 +486,6 @@ function App() {
 
   // Helper function to get standards for a specific event based on current filters
   const getEventStandards = (eventName: string): StandardTime | undefined => {
-
     // Map UI values to data keys
     const ageGroupKey = age === "10&U" ? "01-10" : age; // "10&U" -> "01-10"
     const genderKey = gender === "Boys" ? "Male" : "Female"; // "Boys" -> "Male", "Girls" -> "Female"
@@ -497,26 +495,44 @@ function App() {
     return currentStandards?.find(s => s.Event === eventName);
   };
 
+  // NEW: Memoized list of events for the dropdown, derived from filters and selected events
+  const eventsForDropdown = useMemo(() => {
+    const ageGroupKey = age === "10&U" ? "01-10" : age;
+    const genderKey = gender === "Boys" ? "Male" : "Female";
+    const courseKey = course;
+
+    const currentStandards = standards[ageGroupKey]?.[genderKey]?.[courseKey];
+    if (!currentStandards) {
+      return []; // No standards found for the current selection
+    }
+
+    const standardsEvents = new Set(currentStandards.map(s => s.Event));
+    const selectedEventNames = new Set(selectedEvents.map(se => se.name));
+
+    // Filter ALL_EVENTS to include only those present in current standards
+    // and not already selected by the user.
+    return ALL_EVENTS.filter(event =>
+      standardsEvents.has(event) && !selectedEventNames.has(event)
+    );
+  }, [age, gender, course, selectedEvents, standards]); // Re-calculate when these dependencies change
+
   const handleAddEvent = () => {
     if (eventSelectRef.current) {
       const eventNameToAdd = eventSelectRef.current.value;
+      // Ensure the event is valid and not already selected
       if (eventNameToAdd && !selectedEvents.some(e => e.name === eventNameToAdd)) {
         setSelectedEvents((prev) => [...prev, { name: eventNameToAdd, time: '' }]);
-        setAvailableEvents((prev) => prev.filter((event) => event !== eventNameToAdd));
-        // Optionally reset the dropdown to the first available option or a placeholder
-        const remainingEvents = availableEvents.filter(event => event !== eventNameToAdd);
-        if (remainingEvents.length > 0) {
-          eventSelectRef.current.value = remainingEvents[0];
-        } else {
-          eventSelectRef.current.value = '';
-        }
+        // No need to manually update availableEvents or eventSelectRef.current.value here.
+        // React will re-render, and eventsForDropdown will automatically update,
+        // causing the select element to display the new filtered options.
+        // The browser will typically select the first available option by default.
       }
     }
   };
 
   const handleRemoveEvent = (eventToRemoveName: string) => {
     setSelectedEvents((prev) => prev.filter((event) => event.name !== eventToRemoveName));
-    setAvailableEvents((prev) => [...prev, eventToRemoveName].sort());
+    // No need to manually update availableEvents. eventsForDropdown will re-calculate.
   };
 
   const handleTimeChange = (eventName: string, newTime: string) => {
@@ -558,9 +574,10 @@ function App() {
 
           <div>
             <label htmlFor="event-select">Event:</label>
-            <select id="event-select" ref={eventSelectRef} disabled={availableEvents.length === 0}>
-              {availableEvents.length > 0 ? (
-                availableEvents.map((event) => (
+            {/* Use eventsForDropdown for options and disabled state */}
+            <select id="event-select" ref={eventSelectRef} disabled={eventsForDropdown.length === 0}>
+              {eventsForDropdown.length > 0 ? (
+                eventsForDropdown.map((event) => (
                   <option key={event} value={event}>{event}</option>
                 ))
               ) : (
@@ -568,8 +585,8 @@ function App() {
               )}
             </select>
           </div>
-          {/* The Add button is a direct child of the grid to align with the event select */}
-          <button onClick={handleAddEvent} disabled={availableEvents.length === 0} style={{ alignSelf: 'end' }}>Add</button>
+          {/* The Add button's disabled state also depends on eventsForDropdown */}
+          <button onClick={handleAddEvent} disabled={eventsForDropdown.length === 0} style={{ alignSelf: 'end' }}>Add</button>
         </div>
 
         <div className="selected-events-container">
