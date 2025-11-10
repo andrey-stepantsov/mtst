@@ -13,6 +13,23 @@
   gap: 1.5rem;
 }
 
+.edit-profile-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.87);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem; /* Add some space between it and the last control */
+}
+
+.edit-profile-button:hover {
+  background-color: #333;
+}
+
 .app-bar-control {
   display: flex;
   align-items: center;

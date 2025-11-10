@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import './AppGrid.css';
 import './AppBar.css';
+import './Profile.css'; // New import for Profile styles
 import { SelectedEvent, StandardTime } from './types';
 import { ALL_EVENTS } from './constants';
 import { getCutInfo } from './utils/standards';
@@ -82,9 +83,10 @@ interface AppBarProps {
   swimmerName: string;
   age: string;
   gender: string;
+  onEdit: () => void; // New prop for edit button click
 }
 
-const AppBar = ({ swimmerName, age, gender }: AppBarProps) => {
+const AppBar = ({ swimmerName, age, gender, onEdit }: AppBarProps) => {
   return (
     <header className="app-bar">
       <div className="app-bar-control">
@@ -111,7 +113,68 @@ const AppBar = ({ swimmerName, age, gender }: AppBarProps) => {
           <option value="Girls">Girls</option>
         </select>
       </div>
+      {/* New Edit Profile Button */}
+      <button onClick={onEdit} className="icon-button edit-profile-button" title="Edit Profile">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+      </button>
     </header>
+  );
+};
+
+// New Profile component for editing swimmer details
+interface ProfileProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (profile: { swimmerName: string; age: string; gender: string }) => void;
+  currentProfile: { swimmerName: string; age: string; gender: string };
+}
+
+const Profile = ({ isOpen, onClose, onConfirm, currentProfile }: ProfileProps) => {
+  const [name, setName] = useState(currentProfile.swimmerName);
+  const [age, setAge] = useState(currentProfile.age);
+  const [gender, setGender] = useState(currentProfile.gender);
+
+  useEffect(() => {
+    if (isOpen) {
+      setName(currentProfile.swimmerName);
+      setAge(currentProfile.age);
+      setGender(currentProfile.gender);
+    }
+  }, [isOpen, currentProfile]);
+
+  if (!isOpen) return null;
+
+  const handleConfirm = () => {
+    onConfirm({ swimmerName: name, age, gender });
+    onClose();
+  };
+
+  return (
+    <div className="profile-overlay" onClick={onClose}>
+      <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
+        <h2>Edit Profile</h2>
+        <div className="profile-control">
+          <label htmlFor="profile-name">Swimmer Name:</label>
+          <input id="profile-name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
+        </div>
+        <div className="profile-control">
+          <label htmlFor="profile-age">Age:</label>
+          <select id="profile-age" value={age} onChange={(e) => setAge(e.target.value)}>
+            {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
+              <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
+            ))}
+          </select>
+        </div>
+        <div className="profile-control">
+          <label htmlFor="profile-gender">Gender:</label>
+          <select id="profile-gender" value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="Boys">Boys</option>
+            <option value="Girls">Girls</option>
+          </select>
+        </div>
+        <button onClick={handleConfirm} className="profile-confirm-button">Confirm</button>
+      </div>
+    </div>
   );
 };
 
@@ -123,6 +186,7 @@ function App() {
   const [swimmerName, setSwimmerName] = useState(initialFilters.swimmerName || "swimmer");
   const [age, setAge] = useState(initialFilters.age || "10&U");
   const [gender, setGender] = useState(initialFilters.gender || "Girls");
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // New state for modal visibility
 
   // State to manage the currently selected event in each dropdown
   const [scySelectedEventInDropdown, setScySelectedEventInDropdown] = useState('');
@@ -213,6 +277,13 @@ function App() {
     }));
   };
 
+  // Handler for when the profile modal confirms changes
+  const handleProfileConfirm = (profile: { swimmerName: string; age: string; gender: string }) => {
+    setSwimmerName(profile.swimmerName);
+    setAge(profile.age);
+    setGender(profile.gender);
+  };
+
   // Render function for the events grid to avoid duplicating JSX
   const renderEventsGrid = (course: 'SCY' | 'LCM', events: SelectedEvent[], standards: StandardTime[] | undefined) => {
     if (!events || events.length === 0) return null;
@@ -250,6 +321,14 @@ function App() {
         swimmerName={swimmerName}
         age={age}
         gender={gender}
+        onEdit={() => setIsProfileModalOpen(true)} // Pass handler to AppBar
+      />
+      {/* Profile Modal */}
+      <Profile
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        onConfirm={handleProfileConfirm}
+        currentProfile={{ swimmerName, age, gender }}
       />
       <main className="main-content">
         <div className="card">
