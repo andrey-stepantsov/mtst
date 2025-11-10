@@ -86,7 +86,6 @@ interface AppBarProps {
 const AppBar = ({ swimmerName, onSwimmerNameChange }: AppBarProps) => {
   return (
     <header className="app-bar">
-      <h1>MTST</h1>
       <div className="swimmer-name-container">
         <label htmlFor="app-bar-swimmer-name">Swimmer Name:</label>
         <input
