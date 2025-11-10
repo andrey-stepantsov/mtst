@@ -123,7 +123,7 @@
 }
 
 /* NEW: Center the content of the action cell */
-.grid-cell:last-child {
+.action-cell {
   justify-content: center;
 }
 
