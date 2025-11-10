@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Fragment } from 'react';
 import './AppGrid.css';
 import { SelectedEvent, StandardTime } from './types';
 import { ALL_EVENTS } from './constants';
@@ -146,37 +146,47 @@ function App() {
           <button onClick={handleAddEvent} disabled={eventsForDropdown.length === 0} style={{ alignSelf: 'end' }}>Add</button>
         </div>
 
-        <div className="selected-events-container">
-          {selectedEvents.length > 0 && <h3>Selected Events:</h3>}
-          {selectedEvents.map((event) => {
-            const eventStandards = getEventStandards(event.name);
-            const cutInfo = getCutInfo(event.time, eventStandards);
+        <div className="selected-events-grid">
+          {selectedEvents.length > 0 && (
+            <>
+              <div className="grid-header">Event</div>
+              <div className="grid-header">Time</div>
+              <div className="grid-header">Current Cut</div>
+              <div className="grid-header">Next Cut</div>
+              <div className="grid-header">Difference</div>
+              <div className="grid-header">Action</div>
 
-            return (
-              <div key={event.name} className="selected-event-item">
-                <span>{event.name}</span>
-                <input
-                  type="text"
-                  value={event.time}
-                  onChange={(e) => handleTimeChange(event.name, e.target.value)}
-                  placeholder="mm:ss.ff"
-                  title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
-                />
-                <div className="next-cut-display">
-                  <span>Current: {cutInfo.achievedCut}</span>
-                  {cutInfo.nextCut && (
-                    <span style={{ marginLeft: '10px' }}>
-                      Next: {cutInfo.nextCut}
-                      {cutInfo.absoluteDiff && cutInfo.relativeDiff && (
-                        <span className="time-diff"> ({cutInfo.absoluteDiff} / {cutInfo.relativeDiff})</span>
-                      )}
-                    </span>
-                  )}
-                </div>
-                <button onClick={() => handleRemoveEvent(event.name)}>Remove</button>
-              </div>
-            );
-          })}
+              {selectedEvents.map((event) => {
+                const eventStandards = getEventStandards(event.name);
+                const cutInfo = getCutInfo(event.time, eventStandards);
+
+                return (
+                  <Fragment key={event.name}>
+                    <div className="grid-cell event-name-cell">{event.name}</div>
+                    <div className="grid-cell">
+                      <input
+                        type="text"
+                        value={event.time}
+                        onChange={(e) => handleTimeChange(event.name, e.target.value)}
+                        placeholder="mm:ss.ff"
+                        title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
+                      />
+                    </div>
+                    <div className="grid-cell">{cutInfo.achievedCut}</div>
+                    <div className="grid-cell">{cutInfo.nextCut || 'N/A'}</div>
+                    <div className="grid-cell">
+                      {cutInfo.absoluteDiff && cutInfo.relativeDiff
+                        ? `${cutInfo.absoluteDiff} / ${cutInfo.relativeDiff}`
+                        : 'N/A'}
+                    </div>
+                    <div className="grid-cell">
+                      <button onClick={() => handleRemoveEvent(event.name)}>Remove</button>
+                    </div>
+                  </Fragment>
+                );
+              })}
+            </>
+          )}
         </div>
       </div>
     </>

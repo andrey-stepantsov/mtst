@@ -35,57 +35,44 @@
   font-weight: bold;
 }
 
-/* Style for the selected events container */
-.selected-events-container {
-  margin-top: 20px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-}
-
-.selected-events-container h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.selected-event-item {
-  display: flex;
+/* NEW: Grid for displaying selected events */
+.selected-events-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr auto; /* Event, Time, Current, Next, Diff, Action */
+  gap: 10px 15px; /* row-gap column-gap */
   align-items: center;
-  gap: 10px;
-  margin-bottom: 5px;
-  padding: 5px;
-  background-color: #e0e0e0;
-  border-radius: 3px;
+  margin-top: 20px;
 }
 
-.selected-event-item span {
-  flex-grow: 1; /* Allow event name to take available space */
-}
-
-/* Modified: Make next-cut-display a flex container for better layout of its children */
-.next-cut-display {
-  display: flex; /* NEW */
-  align-items: center; /* NEW */
+/* NEW: Style for grid headers */
+.grid-header {
   font-weight: bold;
-  color: #007bff; /* A distinct color for the next cut */
-  margin-left: 10px; /* Space it out from input */
-  white-space: nowrap; /* Prevent wrapping for the next cut text */
+  padding-bottom: 8px;
+  border-bottom: 2px solid #ccc;
+  text-align: left;
 }
 
-/* NEW: Style for the time difference part */
-.next-cut-display .time-diff {
-  font-weight: normal; /* Make the diff text slightly less prominent */
-  color: #333; /* A more subdued color */
-  margin-left: 5px; /* Small gap between message and diff */
-  font-size: 0.9em; /* Slightly smaller font size */
+/* NEW: Style for grid cells */
+.grid-cell {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  min-width: 0; /* Prevents content from overflowing grid cell */
 }
 
+/* NEW: Specific alignment for event name */
+.event-name-cell {
+  font-weight: 500;
+}
+
+/* NEW: Center the content of the action cell */
+.grid-cell:last-child {
+  text-align: center;
+}
 
 /* Adjust input width for better display */
-.selected-event-item input[type="text"] {
-  width: 90px; /* Slightly smaller to fit better */
+.grid-cell input[type="text"] {
+  width: 100%; /* Fill the cell */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
   text-align: center;
   padding: 5px;
   border: 1px solid #ccc;
