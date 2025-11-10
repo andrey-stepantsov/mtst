@@ -1,6 +1,6 @@
-import { SelectedEvent, Swimmer } from '../types';
+import { SelectedEvent } from '../types';
 
-const SWIMMERS_KEY = 'swimmers';
+const EVENTS_KEY = 'selectedEvents';
 const FILTERS_KEY = 'userFilters';
 
 interface UserFilters {
@@ -8,57 +8,27 @@ interface UserFilters {
   gender: string;
 }
 
-export function loadSwimmers(): Swimmer[] {
-  const savedSwimmers = localStorage.getItem(SWIMMERS_KEY);
-  if (savedSwimmers) {
-    try {
-      return JSON.parse(savedSwimmers);
-    } catch (error) {
-      console.error("Could not load swimmers from localStorage", error);
-    }
-  }
-
-  // Migration from old format
-  const oldSavedEvents = localStorage.getItem('selectedEvents'); // Old key
-  if (oldSavedEvents) {
-    try {
-      const parsed = JSON.parse(oldSavedEvents);
-      let selectedEvents = { SCY: [], LCM: [] };
-
+export function loadSelectedEvents(): { [course: string]: SelectedEvent[] } {
+  try {
+    const savedEvents = localStorage.getItem(EVENTS_KEY);
+    if (savedEvents) {
+      const parsed = JSON.parse(savedEvents);
+      // Basic validation to ensure it's an object with SCY/LCM keys
       if (typeof parsed === 'object' && !Array.isArray(parsed) && parsed !== null) {
-        selectedEvents = { ...selectedEvents, ...parsed };
-      } else if (Array.isArray(parsed)) {
-        selectedEvents.SCY = parsed;
+        return { SCY: parsed.SCY || [], LCM: parsed.LCM || [] };
       }
-
-      const migratedSwimmer: Swimmer = {
-        id: `swimmer-${Date.now()}`,
-        name: 'Swimmer 1',
-        selectedEvents: selectedEvents,
-      };
-      
-      saveSwimmers([migratedSwimmer]);
-      localStorage.removeItem('selectedEvents');
-      
-      return [migratedSwimmer];
-    } catch (error) {
-      console.error("Could not migrate old events from localStorage", error);
     }
+  } catch (error) {
+    console.error("Could not load events from localStorage", error);
   }
-
-  // Default for new user
-  return [{
-    id: `swimmer-${Date.now()}`,
-    name: 'Swimmer 1',
-    selectedEvents: { SCY: [], LCM: [] },
-  }];
+  return { SCY: [], LCM: [] };
 }
 
-export function saveSwimmers(swimmers: Swimmer[]): void {
+export function saveSelectedEvents(events: { [course: string]: SelectedEvent[] }): void {
   try {
-    localStorage.setItem(SWIMMERS_KEY, JSON.stringify(swimmers));
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
   } catch (error) {
-    console.error("Could not save swimmers to localStorage", error);
+    console.error("Could not save events to localStorage", error);
   }
 }
 

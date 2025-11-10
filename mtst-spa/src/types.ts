@@ -28,12 +28,6 @@ export interface AgeGroupStandards {
 }
 
 export interface SelectedEvent {
-  name: string;
+  name:string;
   time: string;
-}
-
-export interface Swimmer {
-  id: string;
-  name: string;
-  selectedEvents: { [course: string]: SelectedEvent[] };
 }

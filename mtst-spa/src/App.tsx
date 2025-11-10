@@ -1,13 +1,13 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import './AppGrid.css';
-import { SelectedEvent, StandardTime, Swimmer } from './types';
+import { SelectedEvent, StandardTime } from './types';
 import { ALL_EVENTS } from './constants';
 import { getCutInfo } from './utils/standards';
 import { useStandards } from './hooks/useStandards';
 import {
-  loadSwimmers,
-  saveSwimmers,
+  loadSelectedEvents,
+  saveSelectedEvents,
   loadUserFilters,
   saveUserFilters,
 } from './utils/persistence';
@@ -78,8 +78,7 @@ const EventRow = ({
 };
 
 function App() {
-  const [swimmers, setSwimmers] = useState<Swimmer[]>(loadSwimmers());
-  const [activeSwimmerId, setActiveSwimmerId] = useState<string | null>(swimmers[0]?.id || null);
+  const [selectedEvents, setSelectedEvents] = useState<{ [course: string]: SelectedEvent[] }>(loadSelectedEvents());
 
   // State for filter selections
   const initialFilters = loadUserFilters();
@@ -93,12 +92,10 @@ function App() {
   const { standardsForSelectedFilters: scyStandards, isLoading: isLoadingScy } = useStandards(age, gender, 'SCY');
   const { standardsForSelectedFilters: lcmStandards, isLoading: isLoadingLcm } = useStandards(age, gender, 'LCM');
 
-  const activeSwimmer = useMemo(() => swimmers.find(s => s.id === activeSwimmerId), [swimmers, activeSwimmerId]);
-
-  // Persist swimmers to localStorage
+  // Persist selected events to localStorage
   useEffect(() => {
-    saveSwimmers(swimmers);
-  }, [swimmers]);
+    saveSelectedEvents(selectedEvents);
+  }, [selectedEvents]);
 
   // Persist filters to localStorage
   useEffect(() => {
@@ -121,8 +118,8 @@ function App() {
     return ALL_EVENTS.filter(event => standardsEvents.has(event) && !selectedEventNames.has(event));
   };
 
-  const scyEventsForDropdown = useMemo(() => createEventsForDropdown(scyStandards, activeSwimmer?.selectedEvents.SCY || []), [scyStandards, activeSwimmer]);
-  const lcmEventsForDropdown = useMemo(() => createEventsForDropdown(lcmStandards, activeSwimmer?.selectedEvents.LCM || []), [lcmStandards, activeSwimmer]);
+  const scyEventsForDropdown = useMemo(() => createEventsForDropdown(scyStandards, selectedEvents.SCY || []), [scyStandards, selectedEvents]);
+  const lcmEventsForDropdown = useMemo(() => createEventsForDropdown(lcmStandards, selectedEvents.LCM || []), [lcmStandards, selectedEvents]);
 
   // Custom hook to manage dropdown selection state
   const useUpdateDropdownSelection = (
@@ -146,75 +143,35 @@ function App() {
   useUpdateDropdownSelection(scyEventsForDropdown, scySelectedEventInDropdown, setScySelectedEventInDropdown);
   useUpdateDropdownSelection(lcmEventsForDropdown, lcmSelectedEventInDropdown, setLcmSelectedEventInDropdown);
 
-  const handleAddSwimmer = () => {
-    const newSwimmer: Swimmer = {
-      id: `swimmer-${Date.now()}`,
-      name: `Swimmer ${swimmers.length + 1}`,
-      selectedEvents: { SCY: [], LCM: [] },
-    };
-    setSwimmers(prev => [...prev, newSwimmer]);
-    setActiveSwimmerId(newSwimmer.id);
-  };
-
   const handleAddEvent = (course: 'SCY' | 'LCM') => {
     const eventNameToAdd = course === 'SCY' ? scySelectedEventInDropdown : lcmSelectedEventInDropdown;
-    if (!eventNameToAdd || !activeSwimmerId) return;
+    if (!eventNameToAdd) return;
 
-    setSwimmers(prevSwimmers =>
-      prevSwimmers.map(swimmer => {
-        if (swimmer.id === activeSwimmerId) {
-          if (swimmer.selectedEvents[course]?.some(e => e.name === eventNameToAdd)) {
-            return swimmer; // Event already exists for this swimmer
-          }
-          return {
-            ...swimmer,
-            selectedEvents: {
-              ...swimmer.selectedEvents,
-              [course]: [...(swimmer.selectedEvents[course] || []), { name: eventNameToAdd, time: '' }],
-            },
-          };
-        }
-        return swimmer;
-      })
-    );
+    // Prevent adding duplicate events
+    if (selectedEvents[course]?.some(e => e.name === eventNameToAdd)) {
+      return;
+    }
+
+    setSelectedEvents(prev => ({
+      ...prev,
+      [course]: [...(prev[course] || []), { name: eventNameToAdd, time: '' }],
+    }));
   };
 
   const handleRemoveEvent = (course: 'SCY' | 'LCM', eventToRemoveName: string) => {
-    if (!activeSwimmerId) return;
-    setSwimmers(prevSwimmers =>
-      prevSwimmers.map(swimmer => {
-        if (swimmer.id === activeSwimmerId) {
-          return {
-            ...swimmer,
-            selectedEvents: {
-              ...swimmer.selectedEvents,
-              [course]: swimmer.selectedEvents[course].filter((event) => event.name !== eventToRemoveName),
-            },
-          };
-        }
-        return swimmer;
-      })
-    );
+    setSelectedEvents(prev => ({
+      ...prev,
+      [course]: prev[course].filter((event) => event.name !== eventToRemoveName),
+    }));
   };
 
   const handleTimeChange = (course: 'SCY' | 'LCM', eventName: string, newTime: string) => {
-    if (!activeSwimmerId) return;
-    setSwimmers(prevSwimmers =>
-      prevSwimmers.map(swimmer => {
-        if (swimmer.id === activeSwimmerId) {
-          return {
-            ...swimmer,
-            selectedEvents: {
-              ...swimmer.selectedEvents,
-              [course]: swimmer.selectedEvents[course].map((event) =>
-                event.name === eventName ? { ...event, time: newTime } : event,
-              ),
-            },
-          };
-        }
-        return swimmer;
-      })
-    );
+    setSelectedEvents(prev => ({
+      ...prev,
+      [course]: prev[course].map((event) =>
+        event.name === eventName ? { ...event, time: newTime } : event,
+      ),
+    }));
   };
 
   // Render function for the events grid to avoid duplicating JSX
@@ -252,21 +209,6 @@ function App() {
     <>
       <div className="card">
         <div className="top-controls">
-          {swimmers.length > 1 && (
-            <div>
-              <label htmlFor="swimmer-select">Swimmer:</label>
-              <select
-                id="swimmer-select"
-                value={activeSwimmerId ?? ''}
-                onChange={(e) => setActiveSwimmerId(e.target.value)}
-              >
-                {swimmers.map((swimmer) => (
-                  <option key={swimmer.id} value={swimmer.id}>{swimmer.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
           <div>
             <label htmlFor="age-select">Age:</label>
             <select id="age-select" value={age} onChange={(e) => setAge(e.target.value)}>
@@ -282,10 +224,6 @@ function App() {
               <option value="Boys">Boys</option>
               <option value="Girls">Girls</option>
             </select>
-          </div>
-
-          <div>
-            <button onClick={handleAddSwimmer}>Add Swimmer</button>
           </div>
         </div>
 
@@ -314,7 +252,7 @@ function App() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               </button>
             </div>
-            {renderEventsGrid('SCY', activeSwimmer?.selectedEvents.SCY || [], scyStandards)}
+            {renderEventsGrid('SCY', selectedEvents.SCY || [], scyStandards)}
           </div>
 
           {/* LCM Group */}
@@ -341,7 +279,7 @@ function App() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               </button>
             </div>
-            {renderEventsGrid('LCM', activeSwimmer?.selectedEvents.LCM || [], lcmStandards)}
+            {renderEventsGrid('LCM', selectedEvents.LCM || [], lcmStandards)}
           </div>
         </div>
       </div>
