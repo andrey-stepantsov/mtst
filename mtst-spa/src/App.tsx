@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import './AppGrid.css'; // Import the new CSS file
 
 // Define types for the standards data
@@ -584,12 +584,14 @@ interface SelectedEvent {
 
 function App() {
   const [selectedEvents, setSelectedEvents] = useState<SelectedEvent[]>([]);
-  const eventSelectRef = useRef<HTMLSelectElement>(null);
 
   // State for filter selections
   const [age, setAge] = useState("10&U"); // Default to first age group
   const [gender, setGender] = useState("Girls"); // Default to Girls
   const [course, setCourse] = useState("SCY"); // Default to SCY
+
+  // NEW: State to manage the currently selected event in the dropdown
+  const [selectedEventInDropdown, setSelectedEventInDropdown] = useState('');
 
   const standards: AgeGroupStandards = standardsData;
 
@@ -625,17 +627,27 @@ function App() {
     );
   }, [age, gender, course, selectedEvents, standards]); // Re-calculate when these dependencies change
 
-  const handleAddEvent = () => {
-    if (eventSelectRef.current) {
-      const eventNameToAdd = eventSelectRef.current.value;
-      // Ensure the event is valid and not already selected
-      if (eventNameToAdd && !selectedEvents.some(e => e.name === eventNameToAdd)) {
-        setSelectedEvents((prev) => [...prev, { name: eventNameToAdd, time: '' }]);
-        // No need to manually update availableEvents or eventSelectRef.current.value here.
-        // React will re-render, and eventsForDropdown will automatically update,
-        // causing the select element to display the new filtered options.
-        // The browser will typically select the first available option by default.
+  // NEW: useEffect to manage the selectedEventInDropdown state
+  useEffect(() => {
+    if (eventsForDropdown.length > 0) {
+      // If there are events, and the current selection is not valid or empty,
+      // set it to the first available event.
+      if (!eventsForDropdown.includes(selectedEventInDropdown)) {
+        setSelectedEventInDropdown(eventsForDropdown[0]);
       }
+    } else {
+      // If no events are available, clear the selection.
+      if (selectedEventInDropdown !== '') {
+        setSelectedEventInDropdown('');
+      }
+    }
+  }, [eventsForDropdown, selectedEventInDropdown]); // Re-run when eventsForDropdown or selectedEventInDropdown changes
+
+  const handleAddEvent = () => {
+    // MODIFIED: Use selectedEventInDropdown state instead of ref
+    const eventNameToAdd = selectedEventInDropdown;
+    if (eventNameToAdd && !selectedEvents.some(e => e.name === eventNameToAdd)) {
+      setSelectedEvents((prev) => [...prev, { name: eventNameToAdd, time: '' }]);
     }
   };
 
@@ -683,8 +695,13 @@ function App() {
 
           <div>
             <label htmlFor="event-select">Event:</label>
-            {/* Use eventsForDropdown for options and disabled state */}
-            <select id="event-select" ref={eventSelectRef} disabled={eventsForDropdown.length === 0}>
+            {/* MODIFIED: Bind value to selectedEventInDropdown state and remove ref */}
+            <select
+              id="event-select"
+              value={selectedEventInDropdown}
+              onChange={(e) => setSelectedEventInDropdown(e.target.value)}
+              disabled={eventsForDropdown.length === 0}
+            >
               {eventsForDropdown.length > 0 ? (
                 eventsForDropdown.map((event) => (
                   <option key={event} value={event}>{event}</option>
