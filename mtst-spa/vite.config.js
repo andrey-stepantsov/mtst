@@ -7,8 +7,8 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // https://vite.dev/config/
-export default defineConfig({
-  base: '/mtst/',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/mtst/' : '/',
   plugins: [react()],
   resolve: {
     alias: {
@@ -16,4 +16,4 @@ export default defineConfig({
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
     }
   }
-})
+}));
