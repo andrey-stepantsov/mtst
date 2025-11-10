@@ -17,7 +17,7 @@ export const useStandards = (age: string, gender: string, course: string) => {
     const fetchStandards = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`/standards/${ageGroupKey}-${genderKey}-${courseKey}.json`);
+        const response = await fetch(`standards/${ageGroupKey}-${genderKey}-${courseKey}.json`);
         const data = response.ok ? await response.json() : [];
         
         if (!response.ok && response.status !== 404) {
