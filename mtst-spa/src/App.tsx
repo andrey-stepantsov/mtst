@@ -1,5 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useSwipeable } from 'react-swipeable';
+import { useState, useMemo, useEffect, Fragment } from 'react';
 import './AppGrid.css';
 import { SelectedEvent, StandardTime } from './types';
 import { ALL_EVENTS } from './constants';
@@ -12,56 +11,6 @@ import {
   saveUserFilters,
 } from './utils/persistence';
 
-interface EventRowProps {
-  course: 'SCY' | 'LCM';
-  event: SelectedEvent;
-  standards: StandardTime[] | undefined;
-  handleRemoveEvent: (course: 'SCY' | 'LCM', eventToRemoveName: string) => void;
-  handleTimeChange: (course: 'SCY' | 'LCM', eventName: string, newTime: string) => void;
-  getEventStandards: (eventName: string, standards: StandardTime[] | undefined) => StandardTime | undefined;
-}
-
-const EventRow = ({
-  course,
-  event,
-  standards,
-  handleRemoveEvent,
-  handleTimeChange,
-  getEventStandards,
-}: EventRowProps) => {
-  const handlers = useSwipeable({
-    onSwipedLeft: () => handleRemoveEvent(course, event.name),
-    trackMouse: true,
-  });
-
-  const eventStandards = getEventStandards(event.name, standards);
-  const cutInfo = getCutInfo(event.time, eventStandards);
-
-  return (
-    <div {...handlers} style={{ display: 'contents' }}>
-      <div className="grid-cell event-name-cell">{event.name}</div>
-      <div className="grid-cell">
-        <input
-          type="text"
-          value={event.time}
-          onChange={(e) => handleTimeChange(course, event.name, e.target.value)}
-          placeholder="mm:ss.ff"
-          title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
-        />
-      </div>
-      <div className="grid-cell">{cutInfo.achievedCut}</div>
-      <div className="grid-cell">{cutInfo.nextCut || 'N/A'}</div>
-      <div className="grid-cell">
-        {cutInfo.absoluteDiff && cutInfo.relativeDiff
-          ? `${cutInfo.absoluteDiff} / ${cutInfo.relativeDiff}`
-          : 'N/A'}
-      </div>
-      <div className="grid-cell action-cell">
-        <span className="swipe-hint" title="Swipe left to delete">&larr;</span>
-      </div>
-    </div>
-  );
-};
 
 function App() {
   const [selectedEvents, setSelectedEvents] = useState<{ [course: string]: SelectedEvent[] }>(loadSelectedEvents());
@@ -168,17 +117,37 @@ function App() {
         <div className="grid-header">Difference</div>
         <div className="grid-header">Action</div>
 
-        {events.map((event) => (
-          <EventRow
-            key={event.name}
-            course={course}
-            event={event}
-            standards={standards}
-            handleRemoveEvent={handleRemoveEvent}
-            handleTimeChange={handleTimeChange}
-            getEventStandards={getEventStandards}
-          />
-        ))}
+        {events.map((event) => {
+          const eventStandards = getEventStandards(event.name, standards);
+          const cutInfo = getCutInfo(event.time, eventStandards);
+
+          return (
+            <Fragment key={event.name}>
+              <div className="grid-cell event-name-cell">{event.name}</div>
+              <div className="grid-cell">
+                <input
+                  type="text"
+                  value={event.time}
+                  onChange={(e) => handleTimeChange(course, event.name, e.target.value)}
+                  placeholder="mm:ss.ff"
+                  title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
+                />
+              </div>
+              <div className="grid-cell">{cutInfo.achievedCut}</div>
+              <div className="grid-cell">{cutInfo.nextCut || 'N/A'}</div>
+              <div className="grid-cell">
+                {cutInfo.absoluteDiff && cutInfo.relativeDiff
+                  ? `${cutInfo.absoluteDiff} / ${cutInfo.relativeDiff}`
+                  : 'N/A'}
+              </div>
+              <div className="grid-cell action-cell">
+                <button onClick={() => handleRemoveEvent(course, event.name)} className="icon-button remove-button" title={`Remove ${course} event`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </Fragment>
+          );
+        })}
       </div>
     );
   };

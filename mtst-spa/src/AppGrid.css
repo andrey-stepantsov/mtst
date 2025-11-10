@@ -39,6 +39,14 @@
   background-color: #e9f5ec; /* Light green background */
 }
 
+.remove-button {
+  color: #dc3545; /* Red */
+}
+
+.remove-button:hover {
+  background-color: #f8d7da; /* Light red background */
+}
+
 
 .top-controls > div {
   display: flex;
@@ -120,12 +128,6 @@
   justify-content: center;
 }
 
-/* NEW: Style for the swipe hint in the action column */
-.swipe-hint {
-  color: #888;
-  font-size: 1.5em;
-  cursor: grab;
-}
 
 /* Adjust input width for better display */
 .grid-cell input[type="text"] {
