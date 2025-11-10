@@ -4,6 +4,8 @@ import './AppGrid.css'; // Import the new CSS file
 // Define types for the standards data
 interface StandardTime {
   Event: string;
+  B: string;
+  BB: string;
   A: string;
   AA: string;
   AAA: string;
@@ -76,6 +78,8 @@ const getNextCut = (bestTime: string, standards: StandardTime | undefined): Next
   }
 
   // Convert all standard cuts to seconds for comparison
+  const bCut = timeToSeconds(standards.B);
+  const bbCut = timeToSeconds(standards.BB);
   const aCut = timeToSeconds(standards.A);
   const aaCut = timeToSeconds(standards.AA);
   const aaaCut = timeToSeconds(standards.AAA);
@@ -85,8 +89,14 @@ const getNextCut = (bestTime: string, standards: StandardTime | undefined): Next
   let nextCutTimeInSeconds: number;
 
   // Determine the next cut level
-  // If userTime > aCut, it means the user's time is slower than the A cut, so A is the next target.
-  if (userTimeInSeconds > aCut) {
+  // If userTime > bCut, it means the user's time is slower than the B cut, so B is the next target.
+  if (userTimeInSeconds > bCut) {
+    nextCutLevel = `B (${standards.B})`;
+    nextCutTimeInSeconds = bCut;
+  } else if (userTimeInSeconds > bbCut) {
+    nextCutLevel = `BB (${standards.BB})`;
+    nextCutTimeInSeconds = bbCut;
+  } else if (userTimeInSeconds > aCut) {
     nextCutLevel = `A (${standards.A})`;
     nextCutTimeInSeconds = aCut;
   } else if (userTimeInSeconds > aaCut) {
@@ -179,8 +189,9 @@ function App() {
     const genderKey = gender === "Boys" ? "Male" : "Female";
     const courseKey = course;
 
-    // Check if data is already loaded to prevent re-fetching
-    if (standards[ageGroupKey]?.[genderKey]?.[courseKey]) {
+    // Check if data is already loaded (or if a fetch has already failed) to prevent re-fetching.
+    // We check for `undefined` because an empty array `[]` is a valid state for a failed fetch.
+    if (standards[ageGroupKey]?.[genderKey]?.[courseKey] !== undefined) {
       return;
     }
 
@@ -188,27 +199,17 @@ function App() {
       setIsLoading(true);
       try {
         const response = await fetch(`/standards/${ageGroupKey}-${genderKey}-${courseKey}.json`);
-        if (!response.ok) {
-          // If a file is not found, it's not a critical error, just means no standards for that combo.
-          // We'll set it to an empty array to prevent future fetches.
-          if (response.status === 404) {
-            console.warn(`No standards file found for: ${ageGroupKey}-${genderKey}-${courseKey}.json`);
-            setStandards(prev => ({
-              ...prev,
-              [ageGroupKey]: {
-                ...prev[ageGroupKey],
-                [genderKey]: {
-                  ...prev[ageGroupKey]?.[genderKey],
-                  [courseKey]: [], // Set to empty array if not found
-                },
-              },
-            }));
-            return; // Exit early if 404
-          } else {
-            throw new Error(`Failed to fetch standards for ${ageGroupKey}-${genderKey}-${courseKey}`);
-          }
+        
+        // For both success and 404, we update the state. For other errors, we don't.
+        const data = response.ok ? await response.json() : [];
+        
+        if (!response.ok && response.status !== 404) {
+            throw new Error(`Failed to fetch standards: ${response.statusText}`);
         }
-        const data = await response.json();
+
+        if (response.status === 404) {
+            console.warn(`No standards file found for: ${ageGroupKey}-${genderKey}-${courseKey}.json`);
+        }
 
         setStandards(prev => ({
           ...prev,
@@ -229,7 +230,7 @@ function App() {
     };
 
     fetchStandards();
-  }, [age, gender, course, standards]);
+  }, [age, gender, course]);
 
   // Helper function to get standards for a specific event based on current filters
   const getEventStandards = (eventName: string): StandardTime | undefined => {
