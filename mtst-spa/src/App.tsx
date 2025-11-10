@@ -220,6 +220,10 @@ function App() {
               <option value="Girls">Girls</option>
             </select>
           </div>
+
+          <div>
+            <button>Add Swimmer</button>
+          </div>
         </div>
 
         <div className="course-groups-container">
