@@ -31,3 +31,13 @@ export interface SelectedEvent {
   name:string;
   time: string;
 }
+
+export interface SwimmerProfile {
+  age: string;
+  gender: string;
+  selectedEvents: { [course: string]: SelectedEvent[] };
+}
+
+export interface SwimmerProfiles {
+  [swimmerName: string]: SwimmerProfile;
+}

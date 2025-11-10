@@ -1,52 +1,75 @@
-import { SelectedEvent } from '../types';
+import { SwimmerProfiles, SwimmerProfile } from '../types';
 
-const EVENTS_KEY = 'selectedEvents';
-const FILTERS_KEY = 'userFilters';
+const PROFILES_KEY = 'swimmerProfiles';
+const ACTIVE_SWIMMER_KEY = 'activeSwimmerName';
 
-interface UserFilters {
-  age: string;
-  gender: string;
-  swimmerName: string;
-}
+// For migration from the old single-swimmer format
+const OLD_EVENTS_KEY = 'selectedEvents';
+const OLD_FILTERS_KEY = 'userFilters';
 
-export function loadSelectedEvents(): { [course: string]: SelectedEvent[] } {
-  try {
-    const savedEvents = localStorage.getItem(EVENTS_KEY);
-    if (savedEvents) {
-      const parsed = JSON.parse(savedEvents);
-      // Basic validation to ensure it's an object with SCY/LCM keys
-      if (typeof parsed === 'object' && !Array.isArray(parsed) && parsed !== null) {
-        return { SCY: parsed.SCY || [], LCM: parsed.LCM || [] };
-      }
+export function loadProfiles(): SwimmerProfiles {
+  const savedProfiles = localStorage.getItem(PROFILES_KEY);
+  if (savedProfiles) {
+    try {
+      return JSON.parse(savedProfiles);
+    } catch (e) {
+      console.error("Could not parse swimmer profiles from localStorage", e);
     }
-  } catch (error) {
-    console.error("Could not load events from localStorage", error);
   }
-  return { SCY: [], LCM: [] };
+
+  // Migration from old format
+  const oldFiltersJSON = localStorage.getItem(OLD_FILTERS_KEY);
+  const oldEventsJSON = localStorage.getItem(OLD_EVENTS_KEY);
+
+  if (oldFiltersJSON && oldEventsJSON) {
+    try {
+      const oldFilters = JSON.parse(oldFiltersJSON);
+      const oldEvents = JSON.parse(oldEventsJSON);
+
+      const swimmerName = oldFilters.swimmerName || 'swimmer';
+      const age = oldFilters.age || '10&U';
+      const gender = oldFilters.gender || 'Girls';
+      const selectedEvents = { SCY: oldEvents.SCY || [], LCM: oldEvents.LCM || [] };
+
+      const migratedProfile: SwimmerProfile = { age, gender, selectedEvents };
+      const migratedProfiles: SwimmerProfiles = { [swimmerName]: migratedProfile };
+
+      saveProfiles(migratedProfiles);
+      saveActiveSwimmerName(swimmerName);
+
+      // Clean up old data
+      localStorage.removeItem(OLD_EVENTS_KEY);
+      localStorage.removeItem(OLD_FILTERS_KEY);
+
+      console.log("Successfully migrated old data to new profile format.");
+      return migratedProfiles;
+
+    } catch (e) {
+      console.error("Failed to migrate old data", e);
+    }
+  }
+
+  // Default for a brand new user
+  const defaultProfile: SwimmerProfile = {
+    age: '10&U',
+    gender: 'Girls',
+    selectedEvents: { SCY: [], LCM: [] },
+  };
+  return { 'swimmer': defaultProfile };
 }
 
-export function saveSelectedEvents(events: { [course: string]: SelectedEvent[] }): void {
+export function saveProfiles(profiles: SwimmerProfiles): void {
   try {
-    localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
-  } catch (error) {
-    console.error("Could not save events to localStorage", error);
+    localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+  } catch (e) {
+    console.error("Could not save profiles to localStorage", e);
   }
 }
 
-export function loadUserFilters(): Partial<UserFilters> {
-  try {
-    const savedFilters = localStorage.getItem(FILTERS_KEY);
-    return savedFilters ? JSON.parse(savedFilters) : {};
-  } catch (error) {
-    console.error("Could not load filters from localStorage", error);
-    return {};
-  }
+export function loadActiveSwimmerName(): string | null {
+  return localStorage.getItem(ACTIVE_SWIMMER_KEY);
 }
 
-export function saveUserFilters(filters: UserFilters): void {
-  try {
-    localStorage.setItem(FILTERS_KEY, JSON.stringify(filters));
-  } catch (error) {
-    console.error("Could not save filters to localStorage", error);
-  }
+export function saveActiveSwimmerName(name: string): void {
+  localStorage.setItem(ACTIVE_SWIMMER_KEY, name);
 }

@@ -2,16 +2,16 @@ import { useState, useMemo, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import './AppGrid.css';
 import './AppBar.css';
-import './Profile.css'; // New import for Profile styles
-import { SelectedEvent, StandardTime } from './types';
+import './Profile.css';
+import { SelectedEvent, StandardTime, SwimmerProfiles } from './types';
 import { ALL_EVENTS } from './constants';
 import { getCutInfo } from './utils/standards';
 import { useStandards } from './hooks/useStandards';
 import {
-  loadSelectedEvents,
-  saveSelectedEvents,
-  loadUserFilters,
-  saveUserFilters,
+  loadProfiles,
+  saveProfiles,
+  loadActiveSwimmerName,
+  saveActiveSwimmerName,
 } from './utils/persistence';
 
 const AGE_BRACKETS = ["10&U", "11-12", "13-14"];
@@ -85,7 +85,7 @@ interface AppBarProps {
   swimmerName: string;
   age: string;
   gender: string;
-  onEdit: () => void; // New prop for edit button click
+  onEdit: () => void;
 }
 
 const AppBar = ({ swimmerName, age, gender, onEdit }: AppBarProps) => {
@@ -115,7 +115,6 @@ const AppBar = ({ swimmerName, age, gender, onEdit }: AppBarProps) => {
           <option value="Girls">Girls</option>
         </select>
       </div>
-      {/* New Edit Profile Button */}
       <button onClick={onEdit} className="icon-button edit-profile-button" title="Edit Profile">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
       </button>
@@ -123,7 +122,6 @@ const AppBar = ({ swimmerName, age, gender, onEdit }: AppBarProps) => {
   );
 };
 
-// New Profile component for editing swimmer details
 interface ProfileProps {
   isOpen: boolean;
   onClose: () => void;
@@ -181,18 +179,21 @@ const Profile = ({ isOpen, onClose, onConfirm, currentProfile }: ProfileProps) =
 };
 
 function App() {
-  const [selectedEvents, setSelectedEvents] = useState<{ [course: string]: SelectedEvent[] }>(loadSelectedEvents());
+  const [profiles, setProfiles] = useState<SwimmerProfiles>(loadProfiles());
+  const [activeSwimmerName, setActiveSwimmerName] = useState<string>(() => {
+    const savedName = loadActiveSwimmerName();
+    const profileKeys = Object.keys(profiles);
+    if (savedName && profileKeys.includes(savedName)) {
+      return savedName;
+    }
+    return profileKeys[0] || 'swimmer'; // Fallback
+  });
 
-  // State for filter selections
-  const initialFilters = loadUserFilters();
-  const [swimmerName, setSwimmerName] = useState(initialFilters.swimmerName || "swimmer");
-  const [age, setAge] = useState(
-    initialFilters.age && AGE_BRACKETS.includes(initialFilters.age)
-      ? initialFilters.age
-      : "10&U"
-  );
-  const [gender, setGender] = useState(initialFilters.gender || "Girls");
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // New state for modal visibility
+  // Derived state for the active profile
+  const activeProfile = profiles[activeSwimmerName];
+  const { age, gender, selectedEvents } = activeProfile;
+
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // State to manage the currently selected event in each dropdown
   const [scySelectedEventInDropdown, setScySelectedEventInDropdown] = useState('');
@@ -201,15 +202,15 @@ function App() {
   const { standardsForSelectedFilters: scyStandards, isLoading: isLoadingScy } = useStandards(age, gender, 'SCY');
   const { standardsForSelectedFilters: lcmStandards, isLoading: isLoadingLcm } = useStandards(age, gender, 'LCM');
 
-  // Persist selected events to localStorage
+  // Persist profiles to localStorage
   useEffect(() => {
-    saveSelectedEvents(selectedEvents);
-  }, [selectedEvents]);
+    saveProfiles(profiles);
+  }, [profiles]);
 
-  // Persist filters to localStorage
+  // Persist active swimmer name to localStorage
   useEffect(() => {
-    saveUserFilters({ age, gender, swimmerName });
-  }, [age, gender, swimmerName]);
+    saveActiveSwimmerName(activeSwimmerName);
+  }, [activeSwimmerName]);
 
   // Helper function to get standards for a specific event based on current filters
   const getEventStandards = (eventName: string, standards: StandardTime[] | undefined): StandardTime | undefined => {
@@ -256,38 +257,86 @@ function App() {
     const eventNameToAdd = course === 'SCY' ? scySelectedEventInDropdown : lcmSelectedEventInDropdown;
     if (!eventNameToAdd) return;
 
-    // Prevent adding duplicate events
-    if (selectedEvents[course]?.some(e => e.name === eventNameToAdd)) {
-      return;
-    }
+    setProfiles(prevProfiles => {
+      const newProfiles = { ...prevProfiles };
+      const currentProfile = { ...newProfiles[activeSwimmerName] };
+      
+      if (currentProfile.selectedEvents[course]?.some(e => e.name === eventNameToAdd)) {
+        return prevProfiles; // No change
+      }
 
-    setSelectedEvents(prev => ({
-      ...prev,
-      [course]: [...(prev[course] || []), { name: eventNameToAdd, time: '' }],
-    }));
+      currentProfile.selectedEvents = {
+        ...currentProfile.selectedEvents,
+        [course]: [...(currentProfile.selectedEvents[course] || []), { name: eventNameToAdd, time: '' }],
+      };
+      newProfiles[activeSwimmerName] = currentProfile;
+      return newProfiles;
+    });
   };
 
   const handleRemoveEvent = (course: 'SCY' | 'LCM', eventToRemoveName: string) => {
-    setSelectedEvents(prev => ({
-      ...prev,
-      [course]: prev[course].filter((event) => event.name !== eventToRemoveName),
-    }));
+    setProfiles(prevProfiles => {
+      const newProfiles = { ...prevProfiles };
+      const currentProfile = { ...newProfiles[activeSwimmerName] };
+      currentProfile.selectedEvents = {
+        ...currentProfile.selectedEvents,
+        [course]: currentProfile.selectedEvents[course].filter((event) => event.name !== eventToRemoveName),
+      };
+      newProfiles[activeSwimmerName] = currentProfile;
+      return newProfiles;
+    });
   };
 
   const handleTimeChange = (course: 'SCY' | 'LCM', eventName: string, newTime: string) => {
-    setSelectedEvents(prev => ({
-      ...prev,
-      [course]: prev[course].map((event) =>
-        event.name === eventName ? { ...event, time: newTime } : event,
-      ),
-    }));
+    setProfiles(prevProfiles => {
+      const newProfiles = { ...prevProfiles };
+      const currentProfile = { ...newProfiles[activeSwimmerName] };
+      currentProfile.selectedEvents = {
+        ...currentProfile.selectedEvents,
+        [course]: currentProfile.selectedEvents[course].map((event) =>
+          event.name === eventName ? { ...event, time: newTime } : event,
+        ),
+      };
+      newProfiles[activeSwimmerName] = currentProfile;
+      return newProfiles;
+    });
   };
 
-  // Handler for when the profile modal confirms changes
-  const handleProfileConfirm = (profile: { swimmerName: string; age: string; gender: string }) => {
-    setSwimmerName(profile.swimmerName);
-    setAge(profile.age);
-    setGender(profile.gender);
+  const handleProfileConfirm = (profileUpdate: { swimmerName: string; age: string; gender: string }) => {
+    const { swimmerName: newName, age: newAge, gender: newGender } = profileUpdate;
+    const oldName = activeSwimmerName;
+
+    setProfiles(prevProfiles => {
+      const newProfiles = { ...prevProfiles };
+
+      if (newName !== oldName) {
+        // Name changed, need to rename the key
+        if (newProfiles[newName]) {
+          alert(`A profile with the name "${newName}" already exists.`);
+          return prevProfiles; // Abort update
+        }
+        const profileData = newProfiles[oldName];
+        delete newProfiles[oldName];
+        newProfiles[newName] = {
+          ...profileData,
+          age: newAge,
+          gender: newGender,
+        };
+      } else {
+        // Name is the same, just update age and gender
+        newProfiles[newName] = {
+          ...newProfiles[newName],
+          age: newAge,
+          gender: newGender,
+        };
+      }
+      return newProfiles;
+    });
+
+    // If name changed, update the active swimmer name state
+    if (newName !== oldName) {
+      setActiveSwimmerName(newName);
+    }
   };
 
   // Render function for the events grid to avoid duplicating JSX
@@ -324,17 +373,16 @@ function App() {
   return (
     <>
       <AppBar
-        swimmerName={swimmerName}
+        swimmerName={activeSwimmerName}
         age={age}
         gender={gender}
-        onEdit={() => setIsProfileModalOpen(true)} // Pass handler to AppBar
+        onEdit={() => setIsProfileModalOpen(true)}
       />
-      {/* Profile Modal */}
       <Profile
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
         onConfirm={handleProfileConfirm}
-        currentProfile={{ swimmerName, age, gender }}
+        currentProfile={{ swimmerName: activeSwimmerName, age, gender }}
       />
       <main className="main-content">
         <div className="card">
