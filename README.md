@@ -39,17 +39,6 @@ This repository contains the `mtst-spa` single-page application. The application
     ```
     The application will be available at `http://localhost:5173`.
 
-### Deployment to GitHub Pages
-
-The project is configured for deployment to GitHub Pages.
-
-1.  Ensure you are in the `mtst-spa` directory.
-2.  Run the deployment script:
-    ```sh
-    npm run deploy
-    ```
-    This command will build the application and push the contents of the `dist` folder to the `gh-pages` branch of your repository.
-
 ### Managing Standards Data
 
 The swimming time standards are sourced from CSV files located in the `standards/` directory at the root of this repository.
