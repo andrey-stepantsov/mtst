@@ -165,6 +165,7 @@
 /* Adjust input width for better display */
 .grid-cell input[type="text"] {
   width: 100%; /* Fill the cell */
+  min-width: 8ch; /* Set minimum width to roughly 8 characters */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
   text-align: center;
   padding: 5px;
