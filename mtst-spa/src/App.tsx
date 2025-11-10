@@ -4,6 +4,8 @@ import './AppGrid.css'; // Import the new CSS file
 // Define types for the standards data
 interface StandardTime {
   Event: string;
+  B: string;
+  BB: string;
   A: string;
   AA: string;
   AAA: string;
@@ -76,6 +78,8 @@ const getNextCut = (bestTime: string, standards: StandardTime | undefined): Next
   }
 
   // Convert all standard cuts to seconds for comparison
+  const bCut = timeToSeconds(standards.B);
+  const bbCut = timeToSeconds(standards.BB);
   const aCut = timeToSeconds(standards.A);
   const aaCut = timeToSeconds(standards.AA);
   const aaaCut = timeToSeconds(standards.AAA);
@@ -85,8 +89,14 @@ const getNextCut = (bestTime: string, standards: StandardTime | undefined): Next
   let nextCutTimeInSeconds: number;
 
   // Determine the next cut level
-  // If userTime > aCut, it means the user's time is slower than the A cut, so A is the next target.
-  if (userTimeInSeconds > aCut) {
+  // If userTime > bCut, it means the user's time is slower than the B cut, so B is the next target.
+  if (userTimeInSeconds > bCut) {
+    nextCutLevel = `B (${standards.B})`;
+    nextCutTimeInSeconds = bCut;
+  } else if (userTimeInSeconds > bbCut) {
+    nextCutLevel = `BB (${standards.BB})`;
+    nextCutTimeInSeconds = bbCut;
+  } else if (userTimeInSeconds > aCut) {
     nextCutLevel = `A (${standards.A})`;
     nextCutTimeInSeconds = aCut;
   } else if (userTimeInSeconds > aaCut) {
@@ -593,7 +603,14 @@ function App() {
   // NEW: State to manage the currently selected event in the dropdown
   const [selectedEventInDropdown, setSelectedEventInDropdown] = useState('');
 
-  const standards: AgeGroupStandards = standardsData;
+  const [standards, setStandards] = useState<AgeGroupStandards | null>(null);
+
+  useEffect(() => {
+    fetch('/standards.json')
+      .then(response => response.json())
+      .then(data => setStandards(data as AgeGroupStandards))
+      .catch(error => console.error("Failed to load standards data:", error));
+  }, []);
 
   // Helper function to get standards for a specific event based on current filters
   const getEventStandards = (eventName: string): StandardTime | undefined => {
@@ -602,12 +619,22 @@ function App() {
     const genderKey = gender === "Boys" ? "Male" : "Female"; // "Boys" -> "Male", "Girls" -> "Female"
     const courseKey = course;
 
+    // Ensure standards data is loaded before trying to access it
+    if (!standards) {
+      return undefined;
+    }
+
     const currentStandards = standards[ageGroupKey]?.[genderKey]?.[courseKey];
     return currentStandards?.find(s => s.Event === eventName);
   };
 
   // NEW: Memoized list of events for the dropdown, derived from filters and selected events
   const eventsForDropdown = useMemo(() => {
+    // Ensure standards data is loaded before trying to access it
+    if (!standards) {
+      return [];
+    }
+
     const ageGroupKey = age === "10&U" ? "01-10" : age;
     const genderKey = gender === "Boys" ? "Male" : "Female";
     const courseKey = course;
@@ -663,6 +690,10 @@ function App() {
       )
     );
   };
+
+  if (!standards) {
+    return <div className="card">Loading standards...</div>;
+  }
 
   return (
     <>
