@@ -19,10 +19,6 @@
   gap: 0.5rem;
 }
 
-.swimmer-name-container label {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-}
 
 .swimmer-name-container input {
   background-color: #333;

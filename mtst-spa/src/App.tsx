@@ -87,12 +87,12 @@ const AppBar = ({ swimmerName, onSwimmerNameChange }: AppBarProps) => {
   return (
     <header className="app-bar">
       <div className="swimmer-name-container">
-        <label htmlFor="app-bar-swimmer-name">Swimmer Name:</label>
         <input
           id="app-bar-swimmer-name"
           type="text"
           value={swimmerName}
           onChange={(e) => onSwimmerNameChange(e.target.value)}
+          placeholder="Swimmer Name"
         />
       </div>
     </header>
