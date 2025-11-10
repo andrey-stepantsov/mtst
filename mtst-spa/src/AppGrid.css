@@ -59,12 +59,25 @@
 
 .controls-grid {
   display: grid;
-  /* Define columns for Course, Event, and Add button */
-  /* Adjust column widths as needed for desired spacing and alignment */
-  grid-template-columns: auto 1fr auto; /* Example: auto for labels/selects, 1fr for event select, auto for button */
+  /* Columns for Event dropdown and Add button */
+  grid-template-columns: 1fr auto;
   gap: 20px; /* Space between grid items */
   align-items: end; /* Align items to the bottom of their grid area */
   margin-bottom: 20px;
+}
+
+.course-groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* Space between SCY and LCM groups */
+  margin-top: 20px;
+}
+
+.course-group h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #555;
 }
 
 .controls-grid > div {

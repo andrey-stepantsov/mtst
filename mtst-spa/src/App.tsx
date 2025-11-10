@@ -12,18 +12,19 @@ import {
 } from './utils/persistence';
 
 function App() {
-  const [selectedEvents, setSelectedEvents] = useState<SelectedEvent[]>(loadSelectedEvents);
+  const [selectedEvents, setSelectedEvents] = useState<{ [course: string]: SelectedEvent[] }>(loadSelectedEvents());
 
   // State for filter selections
   const initialFilters = loadUserFilters();
   const [age, setAge] = useState(initialFilters.age || "10&U");
   const [gender, setGender] = useState(initialFilters.gender || "Girls");
-  const [course, setCourse] = useState(initialFilters.course || "SCY");
 
-  // NEW: State to manage the currently selected event in the dropdown
-  const [selectedEventInDropdown, setSelectedEventInDropdown] = useState('');
+  // State to manage the currently selected event in each dropdown
+  const [scySelectedEventInDropdown, setScySelectedEventInDropdown] = useState('');
+  const [lcmSelectedEventInDropdown, setLcmSelectedEventInDropdown] = useState('');
 
-  const { standardsForSelectedFilters, isLoading } = useStandards(age, gender, course);
+  const { standardsForSelectedFilters: scyStandards, isLoading: isLoadingScy } = useStandards(age, gender, 'SCY');
+  const { standardsForSelectedFilters: lcmStandards, isLoading: isLoadingLcm } = useStandards(age, gender, 'LCM');
 
   // Persist selected events to localStorage
   useEffect(() => {
@@ -32,64 +33,121 @@ function App() {
 
   // Persist filters to localStorage
   useEffect(() => {
-    saveUserFilters({ age, gender, course });
-  }, [age, gender, course]);
+    saveUserFilters({ age, gender });
+  }, [age, gender]);
 
   // Helper function to get standards for a specific event based on current filters
-  const getEventStandards = (eventName: string): StandardTime | undefined => {
-    return standardsForSelectedFilters?.find(s => s.Event === eventName);
+  const getEventStandards = (eventName: string, standards: StandardTime[] | undefined): StandardTime | undefined => {
+    return standards?.find(s => s.Event === eventName);
   };
 
-  // Memoized list of events for the dropdown, derived from filters and selected events
-  const eventsForDropdown = useMemo(() => {
-    if (!standardsForSelectedFilters) {
-      return []; // No standards found for the current selection
-    }
+  // Helper to generate available events for a dropdown
+  const createEventsForDropdown = (
+    standards: StandardTime[] | undefined,
+    currentSelectedEvents: SelectedEvent[]
+  ) => {
+    if (!standards) return [];
+    const standardsEvents = new Set(standards.map(s => s.Event));
+    const selectedEventNames = new Set(currentSelectedEvents.map(se => se.name));
+    return ALL_EVENTS.filter(event => standardsEvents.has(event) && !selectedEventNames.has(event));
+  };
 
-    const standardsEvents = new Set(standardsForSelectedFilters.map(s => s.Event));
-    const selectedEventNames = new Set(selectedEvents.map(se => se.name));
+  const scyEventsForDropdown = useMemo(() => createEventsForDropdown(scyStandards, selectedEvents.SCY || []), [scyStandards, selectedEvents.SCY]);
+  const lcmEventsForDropdown = useMemo(() => createEventsForDropdown(lcmStandards, selectedEvents.LCM || []), [lcmStandards, selectedEvents.LCM]);
 
-    // Filter ALL_EVENTS to include only those present in current standards
-    // and not already selected by the user.
-    return ALL_EVENTS.filter(event =>
-      standardsEvents.has(event) && !selectedEventNames.has(event)
-    );
-  }, [selectedEvents, standardsForSelectedFilters]); // Re-calculate when these dependencies change
-
-  // NEW: useEffect to manage the selectedEventInDropdown state
-  useEffect(() => {
-    if (eventsForDropdown.length > 0) {
-      // If there are events, and the current selection is not valid or empty,
-      // set it to the first available event.
-      if (!eventsForDropdown.includes(selectedEventInDropdown)) {
-        setSelectedEventInDropdown(eventsForDropdown[0]);
+  // Custom hook to manage dropdown selection state
+  const useUpdateDropdownSelection = (
+    eventsForDropdown: string[],
+    selectedEvent: string,
+    setSelectedEvent: (value: string) => void
+  ) => {
+    useEffect(() => {
+      if (eventsForDropdown.length > 0) {
+        if (!eventsForDropdown.includes(selectedEvent)) {
+          setSelectedEvent(eventsForDropdown[0]);
+        }
+      } else {
+        if (selectedEvent !== '') {
+          setSelectedEvent('');
+        }
       }
-    } else {
-      // If no events are available, clear the selection.
-      if (selectedEventInDropdown !== '') {
-        setSelectedEventInDropdown('');
-      }
-    }
-  }, [eventsForDropdown, selectedEventInDropdown]); // Re-run when eventsForDropdown or selectedEventInDropdown changes
+    }, [eventsForDropdown, selectedEvent, setSelectedEvent]);
+  };
 
-  const handleAddEvent = () => {
-    // MODIFIED: Use selectedEventInDropdown state instead of ref
-    const eventNameToAdd = selectedEventInDropdown;
-    if (eventNameToAdd && !selectedEvents.some(e => e.name === eventNameToAdd)) {
-      setSelectedEvents((prev) => [...prev, { name: eventNameToAdd, time: '' }]);
+  useUpdateDropdownSelection(scyEventsForDropdown, scySelectedEventInDropdown, setScySelectedEventInDropdown);
+  useUpdateDropdownSelection(lcmEventsForDropdown, lcmSelectedEventInDropdown, setLcmSelectedEventInDropdown);
+
+  const handleAddEvent = (course: 'SCY' | 'LCM') => {
+    const eventNameToAdd = course === 'SCY' ? scySelectedEventInDropdown : lcmSelectedEventInDropdown;
+    if (eventNameToAdd && !selectedEvents[course]?.some(e => e.name === eventNameToAdd)) {
+      setSelectedEvents(prev => ({
+        ...prev,
+        [course]: [...(prev[course] || []), { name: eventNameToAdd, time: '' }],
+      }));
     }
   };
 
-  const handleRemoveEvent = (eventToRemoveName: string) => {
-    setSelectedEvents((prev) => prev.filter((event) => event.name !== eventToRemoveName));
-    // No need to manually update availableEvents. eventsForDropdown will re-calculate.
+  const handleRemoveEvent = (course: 'SCY' | 'LCM', eventToRemoveName: string) => {
+    setSelectedEvents(prev => ({
+      ...prev,
+      [course]: prev[course].filter((event) => event.name !== eventToRemoveName),
+    }));
   };
 
-  const handleTimeChange = (eventName: string, newTime: string) => {
-    setSelectedEvents((prev) =>
-      prev.map((event) =>
-        event.name === eventName ? { ...event, time: newTime } : event
-      )
+  const handleTimeChange = (course: 'SCY' | 'LCM', eventName: string, newTime: string) => {
+    setSelectedEvents(prev => ({
+      ...prev,
+      [course]: prev[course].map((event) =>
+        event.name === eventName ? { ...event, time: newTime } : event,
+      ),
+    }));
+  };
+
+  // Render function for the events grid to avoid duplicating JSX
+  const renderEventsGrid = (course: 'SCY' | 'LCM', events: SelectedEvent[], standards: StandardTime[] | undefined) => {
+    if (!events || events.length === 0) return null;
+
+    return (
+      <div className="selected-events-grid">
+        <div className="grid-header">Event</div>
+        <div className="grid-header">Time</div>
+        <div className="grid-header">Current Cut</div>
+        <div className="grid-header">Next Cut</div>
+        <div className="grid-header">Difference</div>
+        <div className="grid-header">Action</div>
+
+        {events.map((event) => {
+          const eventStandards = getEventStandards(event.name, standards);
+          const cutInfo = getCutInfo(event.time, eventStandards);
+
+          return (
+            <Fragment key={event.name}>
+              <div className="grid-cell event-name-cell">{event.name}</div>
+              <div className="grid-cell">
+                <input
+                  type="text"
+                  value={event.time}
+                  onChange={(e) => handleTimeChange(course, event.name, e.target.value)}
+                  placeholder="mm:ss.ff"
+                  title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
+                />
+              </div>
+              <div className="grid-cell">{cutInfo.achievedCut}</div>
+              <div className="grid-cell">{cutInfo.nextCut || 'N/A'}</div>
+              <div className="grid-cell">
+                {cutInfo.absoluteDiff && cutInfo.relativeDiff
+                  ? `${cutInfo.absoluteDiff} / ${cutInfo.relativeDiff}`
+                  : 'N/A'}
+              </div>
+              <div className="grid-cell">
+                <button onClick={() => handleRemoveEvent(course, event.name)} className="icon-button remove-button" title={`Remove ${course} event`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </Fragment>
+          );
+        })}
+      </div>
     );
   };
 
@@ -114,89 +172,61 @@ function App() {
             </select>
           </div>
         </div>
-        <div className="controls-grid">
-          <div>
-            <label htmlFor="course-select">Course:</label>
-            <select id="course-select" value={course} onChange={(e) => setCourse(e.target.value)}>
-              <option value="SCY">SCY</option>
-              <option value="LCM">LCM</option>
-            </select>
+
+        <div className="course-groups-container">
+          {/* SCY Group */}
+          <div className="course-group">
+            <h2>SCY Events</h2>
+            <div className="controls-grid">
+              <div>
+                <label htmlFor="scy-event-select">Event:</label>
+                {isLoadingScy && <span className="loading-indicator"> Loading...</span>}
+                <select
+                  id="scy-event-select"
+                  value={scySelectedEventInDropdown}
+                  onChange={(e) => setScySelectedEventInDropdown(e.target.value)}
+                  disabled={scyEventsForDropdown.length === 0}
+                >
+                  {scyEventsForDropdown.length > 0 ? (
+                    scyEventsForDropdown.map((event) => <option key={event} value={event}>{event}</option>)
+                  ) : (
+                    <option value="" disabled>No events available</option>
+                  )}
+                </select>
+              </div>
+              <button onClick={() => handleAddEvent('SCY')} disabled={scyEventsForDropdown.length === 0} className="icon-button add-button" title="Add SCY event">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              </button>
+            </div>
+            {renderEventsGrid('SCY', selectedEvents.SCY, scyStandards)}
           </div>
 
-          <div>
-            <label htmlFor="event-select">Event:</label>
-            {isLoading && <span className="loading-indicator"> Loading...</span>}
-            {/* MODIFIED: Bind value to selectedEventInDropdown state and remove ref */}
-            <select
-              id="event-select"
-              value={selectedEventInDropdown}
-              onChange={(e) => setSelectedEventInDropdown(e.target.value)}
-              disabled={eventsForDropdown.length === 0}
-            >
-              {eventsForDropdown.length > 0 ? (
-                eventsForDropdown.map((event) => (
-                  <option key={event} value={event}>{event}</option>
-                ))
-              ) : (
-                <option value="" disabled>No events available</option>
-              )}
-            </select>
+          {/* LCM Group */}
+          <div className="course-group">
+            <h2>LCM Events</h2>
+            <div className="controls-grid">
+              <div>
+                <label htmlFor="lcm-event-select">Event:</label>
+                {isLoadingLcm && <span className="loading-indicator"> Loading...</span>}
+                <select
+                  id="lcm-event-select"
+                  value={lcmSelectedEventInDropdown}
+                  onChange={(e) => setLcmSelectedEventInDropdown(e.target.value)}
+                  disabled={lcmEventsForDropdown.length === 0}
+                >
+                  {lcmEventsForDropdown.length > 0 ? (
+                    lcmEventsForDropdown.map((event) => <option key={event} value={event}>{event}</option>)
+                  ) : (
+                    <option value="" disabled>No events available</option>
+                  )}
+                </select>
+              </div>
+              <button onClick={() => handleAddEvent('LCM')} disabled={lcmEventsForDropdown.length === 0} className="icon-button add-button" title="Add LCM event">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              </button>
+            </div>
+            {renderEventsGrid('LCM', selectedEvents.LCM, lcmStandards)}
           </div>
-          {/* The Add button's disabled state also depends on eventsForDropdown */}
-          <button
-            onClick={handleAddEvent}
-            disabled={eventsForDropdown.length === 0}
-            style={{ alignSelf: 'end' }}
-            className="icon-button add-button"
-            title="Add event"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          </button>
-        </div>
-
-        <div className="selected-events-grid">
-          {selectedEvents.length > 0 && (
-            <>
-              <div className="grid-header">Event</div>
-              <div className="grid-header">Time</div>
-              <div className="grid-header">Current Cut</div>
-              <div className="grid-header">Next Cut</div>
-              <div className="grid-header">Difference</div>
-              <div className="grid-header">Action</div>
-
-              {selectedEvents.map((event) => {
-                const eventStandards = getEventStandards(event.name);
-                const cutInfo = getCutInfo(event.time, eventStandards);
-
-                return (
-                  <Fragment key={event.name}>
-                    <div className="grid-cell event-name-cell">{event.name}</div>
-                    <div className="grid-cell">
-                      <input
-                        type="text"
-                        value={event.time}
-                        onChange={(e) => handleTimeChange(event.name, e.target.value)}
-                        placeholder="mm:ss.ff"
-                        title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
-                      />
-                    </div>
-                    <div className="grid-cell">{cutInfo.achievedCut}</div>
-                    <div className="grid-cell">{cutInfo.nextCut || 'N/A'}</div>
-                    <div className="grid-cell">
-                      {cutInfo.absoluteDiff && cutInfo.relativeDiff
-                        ? `${cutInfo.absoluteDiff} / ${cutInfo.relativeDiff}`
-                        : 'N/A'}
-                    </div>
-                    <div className="grid-cell">
-                      <button onClick={() => handleRemoveEvent(event.name)} className="icon-button remove-button" title="Remove event">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                      </button>
-                    </div>
-                  </Fragment>
-                );
-              })}
-            </>
-          )}
         </div>
       </div>
     </>
