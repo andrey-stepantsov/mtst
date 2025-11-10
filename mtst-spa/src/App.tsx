@@ -86,19 +86,19 @@ interface AppBarProps {
   age: string;
   gender: string;
   onEdit: () => void;
+  swimmerNames: string[];
+  onSwitchProfile: (name: string) => void;
 }
 
-const AppBar = ({ swimmerName, age, gender, onEdit }: AppBarProps) => {
+const AppBar = ({ swimmerName, age, gender, onEdit, swimmerNames, onSwitchProfile }: AppBarProps) => {
   return (
     <header className="app-bar">
       <div className="app-bar-control">
-        <input
-          id="app-bar-swimmer-name"
-          type="text"
-          value={swimmerName}
-          placeholder="Swimmer Name"
-          readOnly
-        />
+        <select id="app-bar-swimmer-select" value={swimmerName} onChange={(e) => onSwitchProfile(e.target.value)}>
+          {swimmerNames.map((name) => (
+            <option key={name} value={name}>{name}</option>
+          ))}
+        </select>
       </div>
       <div className="app-bar-control">
         <label htmlFor="app-bar-age-select">Age:</label>
@@ -399,6 +399,8 @@ function App() {
         age={age}
         gender={gender}
         onEdit={() => setIsProfileModalOpen(true)}
+        swimmerNames={Object.keys(profiles)}
+        onSwitchProfile={handleSwitchProfile}
       />
       <Profile
         isOpen={isProfileModalOpen}
