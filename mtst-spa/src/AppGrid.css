@@ -61,11 +61,12 @@
 
 .controls-grid {
   display: grid;
-  /* Columns for Event dropdown and Add button */
-  grid-template-columns: 1fr auto;
-  gap: 20px; /* Space between grid items */
+  /* Columns for Event dropdown and Add button, aligned with event rows */
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr auto;
+  gap: 0 15px; /* Align with event row gap */
   align-items: end; /* Align items to the bottom of their grid area */
   margin-bottom: 20px;
+  padding: 0 8px; /* Match event-row-wrapper padding */
 }
 
 .course-groups-container {
@@ -86,6 +87,12 @@
   display: flex;
   flex-direction: column;
   /* Ensure labels are above their controls */
+}
+
+/* Position the add button in the last column of the controls grid */
+.controls-grid > .add-button {
+  grid-column-start: 6;
+  justify-self: center;
 }
 
 .controls-grid label {
