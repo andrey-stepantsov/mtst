@@ -719,6 +719,8 @@ function App() {
           {selectedEvents.length > 0 && <h3>Selected Events:</h3>}
           {selectedEvents.map((event) => {
             const eventStandards = getEventStandards(event.name);
+            const nextCutInfo = getNextCut(event.time, eventStandards); // ADDED THIS LINE
+
             return (
               <div key={event.name} className="selected-event-item">
                 <span>{event.name}</span>
