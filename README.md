@@ -1,4 +1,4 @@
-# Montana Swimming Time Standards Calculator
+# Swimming Motivational Time Standards Tracker
 
 A single-page application to help swimmers and coaches easily check swimming times against the official Montana Swimming time standards for various age groups and courses.
 
