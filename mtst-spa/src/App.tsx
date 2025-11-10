@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import './AppGrid.css'; // Import the new CSS file
 
 // Define types for the standards data
@@ -154,118 +154,6 @@ const ALL_EVENTS = [
   return lengthA - lengthB;
 });
 
-const standardsData = {
-  "01-10": {
-    "Female": {
-      "LCM": [
-        { "Event": "50 FR", "A": "00:33.99", "AA": "00:32.29", "AAA": "00:30.59", "AAAA": "00:28.89" },
-        { "Event": "400 IM", "A": "06:40.99", "AA": "06:20.99", "AAA": "06:00.99", "AAAA": "05:40.99" }
-      ],
-      "SCY": [
-        { "Event": "50 FR", "A": "00:29.99", "AA": "00:28.59", "AAA": "00:27.19", "AAAA": "00:25.79" },
-        { "Event": "400 IM", "A": "05:58.99", "AA": "05:41.59", "AAA": "05:24.19", "AAAA": "05:06.79" }
-      ]
-    },
-    "Male": {
-      "LCM": [
-        { "Event": "50 FR", "A": "00:33.99", "AA": "00:32.29", "AAA": "00:30.59", "AAAA": "00:28.89" },
-        { "Event": "400 IM", "A": "06:40.99", "AA": "06:20.99", "AAA": "06:00.99", "AAAA": "05:40.99" }
-      ],
-      "SCY": [
-        { "Event": "50 FR", "A": "00:29.99", "AA": "00:28.59", "AAA": "00:27.19", "AAAA": "00:25.79" },
-        { "Event": "400 IM", "A": "05:58.99", "AA": "05:41.59", "AAA": "05:24.19", "AAAA": "05:06.79" }
-      ]
-    }
-  },
-  "11-12": {
-    "Female": {
-      "LCM": [
-        { "Event": "50 FR", "A": "00:31.99", "AA": "00:30.49", "AAA": "00:28.99", "AAAA": "00:27.49" },
-        { "Event": "400 IM", "A": "06:14.99", "AA": "05:56.79", "AAA": "05:38.59", "AAAA": "05:20.39" }
-      ],
-      "SCY": [
-        { "Event": "50 FR", "A": "00:28.29", "AA": "00:26.99", "AAA": "00:25.69", "AAAA": "00:24.39" },
-        { "Event": "400 IM", "A": "05:38.99", "AA": "05:22.49", "AAA": "05:05.99", "AAAA": "04:49.49" }
-      ]
-    },
-    "Male": {
-      "LCM": [
-        { "Event": "50 FR", "A": "00:31.99", "AA": "00:30.49", "AAA": "00:28.99", "AAAA": "00:27.49" },
-        { "Event": "400 IM", "A": "06:14.99", "AA": "05:56.79", "AAA": "05:38.59", "AAAA": "05:20.39" }
-      ],
-      "SCY": [
-        { "Event": "50 FR", "A": "00:28.29", "AA": "00:26.99", "AAA": "00:25.69", "AAAA": "00:24.39" },
-        { "Event": "400 IM", "A": "05:38.99", "AA": "05:22.49", "AAA": "05:05.99", "AAAA": "04:49.49" }
-      ]
-    }
-  },
-  "13-14": {
-    "Female": {
-      "LCM": [
-        { "Event": "50 FR", "A": "00:30.99", "AA": "00:29.59", "AAA": "00:28.19", "AAAA": "00:26.79" },
-        { "Event": "400 IM", "A": "06:00.99", "AA": "05:43.19", "AAA": "05:25.39", "AAAA": "05:07.59" }
-      ],
-      "SCY": [
-        { "Event": "50 FR", "A": "00:27.49", "AA": "00:26.19", "AAA": "00:24.89", "AAAA": "00:23.59" },
-        { "Event": "400 IM", "A": "05:27.99", "AA": "05:11.89", "AAA": "04:55.79", "AAAA": "04:39.69" }
-      ]
-    },
-    "Male": {
-      "LCM": [
-        { "Event": "50 FR", "A": "00:29.99", "AA": "00:28.59", "AAA": "00:27.19", "AAAA": "00:25.79" },
-        { "Event": "400 IM", "A": "05:49.99", "AA": "05:32.49", "AAA": "05:14.99", "AAAA": "04:57.49" }
-      ],
-      "SCY": [
-        { "Event": "50 FR", "A": "00:26.59", "AA": "00:25.39", "AAA": "00:24.19", "AAAA": "00:22.99" },
-        { "Event": "400 IM", "A": "05:19.99", "AA": "05:04.29", "AAA": "04:48.59", "AAAA": "04:32.89" }
-      ]
-    }
-  },
-  "15-16": {
-    "Female": {
-      "LCM": [
-        { "Event": "50 FR", "A": "00:30.49", "AA": "00:29.09", "AAA": "00:27.69", "AAAA": "00:26.29" },
-        { "Event": "400 IM", "A": "05:56.99", "AA": "05:39.39", "AAA": "05:21.79", "AAAA": "05:04.19" }
-      ],
-      "SCY": [
-        { "Event": "50 FR", "A": "00:26.99", "AA": "00:25.69", "AAA": "00:24.39", "AAAA": "00:23.09" },
-        { "Event": "400 IM", "A": "05:23.99", "AA": "05:08.09", "AAA": "04:52.19", "AAAA": "04:36.29" }
-      ]
-    },
-    "Male": {
-      "LCM": [
-        { "Event": "50 FR", "A": "00:28.99", "AA": "00:27.69", "AAA": "00:26.39", "AAAA": "00:25.09" },
-        { "Event": "400 IM", "A": "05:39.99", "AA": "05:23.49", "AAA": "05:06.99", "AAAA": "04:50.49" }
-      ],
-      "SCY": [
-        { "Event": "50 FR", "A": "00:25.69", "AA": "00:24.49", "AAA": "00:23.29", "AAAA": "00:22.09" },
-        { "Event": "400 IM", "A": "05:09.99", "AA": "04:54.69", "AAA": "04:39.39", "AAAA": "04:24.09" }
-      ]
-    }
-  },
-  "17-18": {
-    "Female": {
-      "LCM": [
-        { "Event": "50 FR", "A": "00:30.29", "AA": "00:28.89", "AAA": "00:27.49", "AAAA": "00:26.09" },
-        { "Event": "400 IM", "A": "05:54.99", "AA": "05:37.49", "AAA": "05:20.99", "AAAA": "05:03.49" }
-      ],
-      "SCY": [
-        { "Event": "50 FR", "A": "00:26.79", "AA": "00:25.59", "AAA": "00:24.39", "AAAA": "00:23.19" },
-        { "Event": "400 IM", "A": "05:21.99", "AA": "05:06.19", "AAA": "04:50.39", "AAAA": "04:34.59" }
-      ]
-    },
-    "Male": {
-      "LCM": [
-        { "Event": "50 FR", "A": "00:28.69", "AA": "00:27.39", "AAA": "00:26.09", "AAAA": "00:24.79" },
-        { "Event": "400 IM", "A": "05:37.99", "AA": "05:21.59", "AAA": "05:05.19", "AAAA": "04:48.79" }
-      ],
-      "SCY": [
-        { "Event": "50 FR", "A": "00:25.49", "AA": "00:24.29", "AAA": "00:23.09", "AAAA": "00:21.89" },
-        { "Event": "400 IM", "A": "05:07.99", "AA": "04:52.79", "AAA": "04:37.59", "AAAA": "04:22.39" }
-      ]
-    }
-  }
-};
 
 interface SelectedEvent {
   name: string;
@@ -283,7 +171,65 @@ function App() {
   // NEW: State to manage the currently selected event in the dropdown
   const [selectedEventInDropdown, setSelectedEventInDropdown] = useState('');
 
-  const standards: AgeGroupStandards = standardsData;
+  const [standards, setStandards] = useState<AgeGroupStandards>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const ageGroupKey = age === "10&U" ? "01-10" : age;
+    const genderKey = gender === "Boys" ? "Male" : "Female";
+    const courseKey = course;
+
+    // Check if data is already loaded to prevent re-fetching
+    if (standards[ageGroupKey]?.[genderKey]?.[courseKey]) {
+      return;
+    }
+
+    const fetchStandards = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/standards/${ageGroupKey}-${genderKey}-${courseKey}.json`);
+        if (!response.ok) {
+          // If a file is not found, it's not a critical error, just means no standards for that combo.
+          // We'll set it to an empty array to prevent future fetches.
+          if (response.status === 404) {
+            console.warn(`No standards file found for: ${ageGroupKey}-${genderKey}-${courseKey}.json`);
+            setStandards(prev => ({
+              ...prev,
+              [ageGroupKey]: {
+                ...prev[ageGroupKey],
+                [genderKey]: {
+                  ...prev[ageGroupKey]?.[genderKey],
+                  [courseKey]: [], // Set to empty array if not found
+                },
+              },
+            }));
+            return; // Exit early if 404
+          } else {
+            throw new Error(`Failed to fetch standards for ${ageGroupKey}-${genderKey}-${courseKey}`);
+          }
+        }
+        const data = await response.json();
+
+        setStandards(prev => ({
+          ...prev,
+          [ageGroupKey]: {
+            ...prev[ageGroupKey],
+            [genderKey]: {
+              ...prev[ageGroupKey]?.[genderKey],
+              [courseKey]: data,
+            },
+          },
+        }));
+
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStandards();
+  }, [age, gender, course, standards]);
 
   // Helper function to get standards for a specific event based on current filters
   const getEventStandards = (eventName: string): StandardTime | undefined => {
@@ -315,7 +261,7 @@ function App() {
     return ALL_EVENTS.filter(event =>
       standardsEvents.has(event) && !selectedEventNames.has(event)
     );
-  }, [age, gender, course, selectedEvents]); // Re-calculate when these dependencies change
+  }, [age, gender, course, selectedEvents, standards]); // Re-calculate when these dependencies change
 
   // NEW: useEffect to manage the selectedEventInDropdown state
   useEffect(() => {
@@ -385,6 +331,7 @@ function App() {
 
           <div>
             <label htmlFor="event-select">Event:</label>
+            {isLoading && <span className="loading-indicator"> Loading...</span>}
             {/* MODIFIED: Bind value to selectedEventInDropdown state and remove ref */}
             <select
               id="event-select"
