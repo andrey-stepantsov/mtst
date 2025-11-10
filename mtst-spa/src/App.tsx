@@ -143,7 +143,15 @@ function App() {
             </select>
           </div>
           {/* The Add button's disabled state also depends on eventsForDropdown */}
-          <button onClick={handleAddEvent} disabled={eventsForDropdown.length === 0} style={{ alignSelf: 'end' }}>Add</button>
+          <button
+            onClick={handleAddEvent}
+            disabled={eventsForDropdown.length === 0}
+            style={{ alignSelf: 'end' }}
+            className="icon-button add-button"
+            title="Add event"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
         </div>
 
         <div className="selected-events-grid">
@@ -180,7 +188,9 @@ function App() {
                         : 'N/A'}
                     </div>
                     <div className="grid-cell">
-                      <button onClick={() => handleRemoveEvent(event.name)}>Remove</button>
+                      <button onClick={() => handleRemoveEvent(event.name)} className="icon-button remove-button" title="Remove event">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      </button>
                     </div>
                   </Fragment>
                 );

@@ -4,6 +4,49 @@
   margin-bottom: 20px;
 }
 
+/* NEW: Styles for icon buttons */
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.icon-button:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.icon-button:disabled:hover {
+  background-color: transparent;
+}
+
+.icon-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.add-button {
+  color: #28a745; /* Green */
+}
+
+.add-button:hover:not(:disabled) {
+  background-color: #e9f5ec; /* Light green background */
+}
+
+.remove-button {
+  color: #dc3545; /* Red */
+}
+
+.remove-button:hover {
+  background-color: #f8d7da; /* Light red background */
+}
+
 .top-controls > div {
   display: flex;
   flex-direction: column;
