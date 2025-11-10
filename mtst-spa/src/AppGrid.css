@@ -138,6 +138,7 @@
   min-height: 2.5em; /* Reserve space for text wrapping */
   display: flex;
   align-items: flex-end;
+  font-size: 10px;
 }
 
 /* NEW: Style for grid cells */
@@ -146,6 +147,7 @@
   align-items: center;
   padding: 8px 0;
   min-width: 0; /* Prevents content from overflowing grid cell */
+  font-size: 10px;
 }
 
 /* NEW: Specific alignment for event name */
@@ -177,6 +179,7 @@
   border-radius: 3px;
   background-color: #2a2a2a;
   color: #ffffff;
+  font-size: 10px;
 }
 
 /* NEW: Styles for alternating row colors */
