@@ -13,11 +13,11 @@ const OUTPUT_DIR = path.resolve(process.cwd(), 'public/standards'); // Output di
 async function parseCsvFile(filePath) {                                                                                                                                               
     const fileContent = await fs.promises.readFile(filePath, 'utf8');                                                                                                                 
     return new Promise((resolve, reject) => {                                                                                                                                         
-        parse(fileContent, {                                                                                                                                                          
-            columns: true, // Treat the first row as column headers                                                                                                                   
-            skip_empty_lines: true,                                                                                                                                                   
-            trim: true,                                                                                                                                                               
-        }, (err, records) => {                                                                                                                                                        
+        parse(fileContent, {
+            columns: (header) => header.map(column => column.trim().replace(/^\uFEFF/, '')), // Clean up headers
+            skip_empty_lines: true,
+            trim: true,
+        }, (err, records) => {
             if (err) {                                                                                                                                                                
                 return reject(err);                                                                                                                                                   
             }                                                                                                                                                                         
