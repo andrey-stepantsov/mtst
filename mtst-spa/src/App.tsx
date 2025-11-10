@@ -656,23 +656,13 @@ function App() {
                   onChange={(e) => handleTimeChange(event.name, e.target.value)}
                   placeholder="mm:ss.ff"
                   title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
-                  style={{ width: '90px', textAlign: 'center', padding: '5px', border: '1px solid #ccc', borderRadius: '3px' }}
                 />
                 {eventStandards ? (
-                  <>
-                    <div className="standards-display">
-                      <span>A: {eventStandards.A}</span>
-                      <span>AA: {eventStandards.AA}</span>
-                      <span>AAA: {eventStandards.AAA}</span>
-                      <span>AAAA: {eventStandards.AAAA}</span>
-                    </div>
-                    {/* NEW: Display the next cut */}
-                    <div className="next-cut-display">
-                      {getNextCut(event.time, eventStandards)}
-                    </div>
-                  </>
+                  <div className="next-cut-display">
+                    {getNextCut(event.time, eventStandards)}
+                  </div>
                 ) : (
-                  <span className="standards-display">Standards not found</span>
+                  <div className="next-cut-display">Standards not found for this event.</div>
                 )}
                 <button onClick={() => handleRemoveEvent(event.name)}>Remove</button>
               </div>

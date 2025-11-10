@@ -48,18 +48,19 @@
   flex-grow: 1; /* Allow event name to take available space */
 }
 
-/* NEW: Style for the standards display */
-.standards-display {
-  display: flex;
-  gap: 10px;
-  font-size: 0.9em;
-  color: #555;
-}
-
 /* NEW: Style for the next cut display */
 .next-cut-display {
   font-weight: bold;
   color: #007bff; /* A distinct color for the next cut */
   margin-left: 10px; /* Space it out from standards */
   white-space: nowrap; /* Prevent wrapping for the next cut text */
+}
+
+/* Adjust input width for better display */
+.selected-event-item input[type="text"] {
+  width: 90px; /* Slightly smaller to fit better */
+  text-align: center;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
 }
