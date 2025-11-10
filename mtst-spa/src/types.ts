@@ -31,3 +31,9 @@ export interface SelectedEvent {
   name: string;
   time: string;
 }
+
+export interface Swimmer {
+  id: string;
+  name: string;
+  selectedEvents: { [course: string]: SelectedEvent[] };
+}
