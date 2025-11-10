@@ -13,6 +13,12 @@
   gap: 1.5rem;
 }
 
+.version-tag {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-right: auto;
+}
+
 .edit-profile-button {
   background: none;
   border: none;
