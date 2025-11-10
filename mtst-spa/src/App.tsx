@@ -1,13 +1,13 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import './AppGrid.css';
-import { SelectedEvent, StandardTime } from './types';
+import { SelectedEvent, StandardTime, Swimmer } from './types';
 import { ALL_EVENTS } from './constants';
 import { getCutInfo } from './utils/standards';
 import { useStandards } from './hooks/useStandards';
 import {
-  loadSelectedEvents,
-  saveSelectedEvents,
+  loadSwimmers,
+  saveSwimmers,
   loadUserFilters,
   saveUserFilters,
 } from './utils/persistence';
