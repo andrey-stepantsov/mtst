@@ -320,6 +320,10 @@ function App() {
     });
   };
 
+  const handleSwitchProfile = (name: string) => {
+    setActiveSwimmerName(name);
+  };
+
   const handleProfileConfirm = (profileUpdate: { swimmerName: string; age: string; gender: string }) => {
     const { swimmerName: newName, age: newAge, gender: newGender } = profileUpdate;
     const oldName = activeSwimmerName;
