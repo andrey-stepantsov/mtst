@@ -62,7 +62,7 @@
 .controls-grid {
   display: grid;
   /* Columns for Event dropdown and Add button, aligned with event rows */
-  grid-template-columns: 1.4fr 1fr 1fr 1fr 1.5fr 32px;
+  grid-template-columns: 0.98fr 1fr 1fr 1fr 1.5fr 32px;
   gap: 0 8px; /* Align with event row gap */
   align-items: end; /* Align items to the bottom of their grid area */
   margin-bottom: 20px;
@@ -114,14 +114,14 @@
 
 .grid-header-wrapper {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr 1.5fr 32px; /* Event, Time, Current, Next, Diff, Action */
+  grid-template-columns: 0.98fr 1fr 1fr 1fr 1.5fr 32px; /* Event, Time, Current, Next, Diff, Action */
   gap: 0 8px; /* column-gap */
   padding: 0 8px; /* Match event-row-wrapper padding */
 }
 
 .event-row-wrapper {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr 1.5fr 32px; /* Event, Time, Current, Next, Diff, Action */
+  grid-template-columns: 0.98fr 1fr 1fr 1fr 1.5fr 32px; /* Event, Time, Current, Next, Diff, Action */
   gap: 0 8px; /* column-gap */
   align-items: center;
   border-radius: 4px;
