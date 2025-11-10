@@ -1,8 +1,24 @@
+.top-controls {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.top-controls > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-controls label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
 .controls-grid {
   display: grid;
-  /* Define columns for Age, Gender, Course, Event, and Add button */
+  /* Define columns for Course, Event, and Add button */
   /* Adjust column widths as needed for desired spacing and alignment */
-  grid-template-columns: auto auto auto 1fr auto; /* Example: auto for labels/selects, 1fr for event select, auto for button */
+  grid-template-columns: auto 1fr auto; /* Example: auto for labels/selects, 1fr for event select, auto for button */
   gap: 20px; /* Space between grid items */
   align-items: end; /* Align items to the bottom of their grid area */
   margin-bottom: 20px;

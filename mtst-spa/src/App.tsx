@@ -79,7 +79,7 @@ function App() {
   return (
     <>
       <div className="card">
-        <div className="controls-grid">
+        <div className="top-controls">
           <div>
             <label htmlFor="age-select">Age:</label>
             <select id="age-select" value={age} onChange={(e) => setAge(e.target.value)}>
@@ -96,7 +96,8 @@ function App() {
               <option value="Girls">Girls</option>
             </select>
           </div>
-
+        </div>
+        <div className="controls-grid">
           <div>
             <label htmlFor="course-select">Course:</label>
             <select id="course-select" value={course} onChange={(e) => setCourse(e.target.value)}>
