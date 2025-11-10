@@ -45,6 +45,14 @@ function App() {
     saveActiveSwimmerName(activeSwimmerName);
   }, [activeSwimmerName]);
 
+  // When profiles change (e.g., deletion), ensure activeSwimmerName is valid
+  useEffect(() => {
+    const profileKeys = Object.keys(profiles);
+    if (profileKeys.length > 0 && !profileKeys.includes(activeSwimmerName)) {
+      setActiveSwimmerName(profileKeys[0]);
+    }
+  }, [profiles, activeSwimmerName]);
+
   const handleAddEvent = (course: 'SCY' | 'LCM', eventNameToAdd: string) => {
     if (!eventNameToAdd) return;
 
@@ -118,6 +126,21 @@ function App() {
     });
   };
 
+  const handleDeleteSwimmer = (nameToDelete: string) => {
+    if (Object.keys(profiles).length <= 1) {
+      alert("Cannot delete the only swimmer profile.");
+      return;
+    }
+
+    if (window.confirm(`Are you sure you want to delete swimmer "${nameToDelete}"? This action cannot be undone.`)) {
+      setProfiles(prevProfiles => {
+        const newProfiles = { ...prevProfiles };
+        delete newProfiles[nameToDelete];
+        return newProfiles;
+      });
+    }
+  };
+
   const handleProfileConfirm = (profileUpdate: { swimmerName: string; age: string; gender: string }) => {
     const { swimmerName: newName, age: newAge, gender: newGender } = profileUpdate;
     const oldName = activeSwimmerName;
@@ -173,6 +196,7 @@ function App() {
         swimmerNames={Object.keys(profiles)}
         onSwitchProfile={handleSwitchProfile}
         onNewSwimmer={handleNewSwimmer}
+        onDeleteSwimmer={handleDeleteSwimmer}
       />
       <main className="main-content">
         <div className="card">

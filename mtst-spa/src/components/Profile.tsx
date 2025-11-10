@@ -9,9 +9,10 @@ interface ProfileProps {
   swimmerNames: string[];
   onSwitchProfile: (name: string) => void;
   onNewSwimmer: () => void;
+  onDeleteSwimmer: (name: string) => void;
 }
 
-export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onSwitchProfile, onNewSwimmer }: ProfileProps) => {
+export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onSwitchProfile, onNewSwimmer, onDeleteSwimmer }: ProfileProps) => {
   const [name, setName] = useState(currentProfile.swimmerName);
   const [age, setAge] = useState(currentProfile.age);
   const [gender, setGender] = useState(currentProfile.gender);
@@ -33,6 +34,11 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
 
   const handleNewSwimmerClick = () => {
     onNewSwimmer();
+    onClose();
+  };
+
+  const handleDeleteSwimmerClick = () => {
+    onDeleteSwimmer(currentProfile.swimmerName);
     onClose();
   };
 
@@ -76,9 +82,12 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
           </select>
         </div>
         <div className="profile-buttons-container">
-          <button onClick={handleNewSwimmerClick} className="profile-new-button">New Swimmer</button>
           <button onClick={onClose} className="profile-close-button">Close</button>
           <button onClick={handleConfirm} className="profile-confirm-button">Update</button>
+        </div>
+        <div className="profile-buttons-container">
+          <button onClick={handleNewSwimmerClick} className="profile-new-button">New Swimmer</button>
+          <button onClick={handleDeleteSwimmerClick} className="profile-delete-button" disabled={swimmerNames.length <= 1}>Delete Swimmer</button>
         </div>
       </div>
     </div>
