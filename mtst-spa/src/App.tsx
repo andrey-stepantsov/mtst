@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import useSwipeable from 'react-swipeable';
+import { useSwipeable } from 'react-swipeable';
 import './AppGrid.css';
 import { SelectedEvent, StandardTime } from './types';
 import { ALL_EVENTS } from './constants';
