@@ -81,12 +81,16 @@ const EventRow = ({
 interface AppBarProps {
   swimmerName: string;
   onSwimmerNameChange: (name: string) => void;
+  age: string;
+  onAgeChange: (age: string) => void;
+  gender: string;
+  onGenderChange: (gender: string) => void;
 }
 
-const AppBar = ({ swimmerName, onSwimmerNameChange }: AppBarProps) => {
+const AppBar = ({ swimmerName, onSwimmerNameChange, age, onAgeChange, gender, onGenderChange }: AppBarProps) => {
   return (
     <header className="app-bar">
-      <div className="swimmer-name-container">
+      <div className="app-bar-control">
         <input
           id="app-bar-swimmer-name"
           type="text"
@@ -94,6 +98,21 @@ const AppBar = ({ swimmerName, onSwimmerNameChange }: AppBarProps) => {
           onChange={(e) => onSwimmerNameChange(e.target.value)}
           placeholder="Swimmer Name"
         />
+      </div>
+      <div className="app-bar-control">
+        <label htmlFor="app-bar-age-select">Age:</label>
+        <select id="app-bar-age-select" value={age} onChange={(e) => onAgeChange(e.target.value)}>
+          {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
+            <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
+          ))}
+        </select>
+      </div>
+      <div className="app-bar-control">
+        <label htmlFor="app-bar-gender-select">Gender:</label>
+        <select id="app-bar-gender-select" value={gender} onChange={(e) => onGenderChange(e.target.value)}>
+          <option value="Boys">Boys</option>
+          <option value="Girls">Girls</option>
+        </select>
       </div>
     </header>
   );
@@ -230,28 +249,16 @@ function App() {
 
   return (
     <>
-      <AppBar swimmerName={swimmerName} onSwimmerNameChange={setSwimmerName} />
+      <AppBar
+        swimmerName={swimmerName}
+        onSwimmerNameChange={setSwimmerName}
+        age={age}
+        onAgeChange={setAge}
+        gender={gender}
+        onGenderChange={setGender}
+      />
       <main className="main-content">
         <div className="card">
-          <div className="top-controls">
-            <div>
-              <label htmlFor="age-select">Age:</label>
-              <select id="age-select" value={age} onChange={(e) => setAge(e.target.value)}>
-                {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
-                  <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="gender-select">Gender:</label>
-              <select id="gender-select" value={gender} onChange={(e) => setGender(e.target.value)}>
-                <option value="Boys">Boys</option>
-                <option value="Girls">Girls</option>
-              </select>
-            </div>
-          </div>
-
           <div className="course-groups-container">
             {/* SCY Group */}
             <div className="course-group">

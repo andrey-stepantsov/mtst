@@ -7,20 +7,25 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   width: 100%;
   box-sizing: border-box;
-  /* text-align: left; */
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 1.5rem;
 }
 
-.swimmer-name-container {
+.app-bar-control {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
+.app-bar-control label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
 
-.swimmer-name-container input {
+.app-bar-control input,
+.app-bar-control select {
   background-color: #333;
   border: 1px solid #555;
   color: #fff;
