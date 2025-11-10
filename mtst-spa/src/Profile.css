@@ -54,19 +54,39 @@
   box-sizing: border-box;
 }
 
-.profile-confirm-button {
+.profile-buttons-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.profile-confirm-button,
+.profile-new-button {
+  flex: 1;
   padding: 0.75rem;
   font-size: 1rem;
   font-weight: 600;
   border-radius: 8px;
-  border: 1px solid transparent;
   cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+.profile-confirm-button {
+  border: 1px solid transparent;
   background-color: #1a1a1a;
   color: #fff;
-  transition: border-color 0.25s;
-  margin-top: 1rem;
 }
 
 .profile-confirm-button:hover {
   border-color: #646cff;
+}
+
+.profile-new-button {
+  background-color: #333;
+  color: rgba(255, 255, 255, 0.87);
+  border: 1px solid #555;
+}
+
+.profile-new-button:hover {
+  border-color: #777;
 }
