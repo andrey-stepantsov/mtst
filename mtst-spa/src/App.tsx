@@ -12,22 +12,42 @@ interface StandardTime {
   AAAA: string;
 }
 
-// Helper function to convert mm:ss.ff string to total seconds (float)
+// Helper function to convert time string (e.g., mm:ss.ff, ss.ff) to total seconds (float)
 // Returns Infinity for invalid or empty time strings, treating them as very slow.
 const timeToSeconds = (timeString: string): number => {
-  // Basic validation for mm:ss.ff format
-  if (!timeString || !/^\d{2}:\d{2}\.\d{2}$/.test(timeString)) {
+  if (!timeString) {
     return Infinity;
   }
 
-  const [minutesStr, secondsAndHundredthsStr] = timeString.split(':');
-  const [secondsStr, hundredthsStr] = secondsAndHundredthsStr.split('.');
+  const timeParts = timeString.split(':');
+  let minutes = 0;
+  let secondsAndHundredths;
 
-  const minutes = parseInt(minutesStr, 10);
-  const seconds = parseInt(secondsStr, 10);
-  const hundredths = parseInt(hundredthsStr, 10);
+  if (timeParts.length > 2) {
+    return Infinity; // e.g. 1:2:3.45
+  }
 
-  // Further validation for parsed numbers
+  if (timeParts.length === 2) {
+    minutes = parseInt(timeParts[0], 10);
+    secondsAndHundredths = timeParts[1];
+  } else { // length is 1
+    secondsAndHundredths = timeParts[0];
+  }
+
+  const secondParts = secondsAndHundredths.split('.');
+  if (secondParts.length > 2) {
+    return Infinity; // e.g. 5.6.7
+  }
+
+  const seconds = parseInt(secondParts[0], 10);
+  let hundredths = 0;
+  if (secondParts.length === 2) {
+    // Pad with 0 to handle single digit hundredths (e.g., '5' becomes '50')
+    const hundredthsStr = secondParts[1].padEnd(2, '0');
+    // Take only first two digits for hundredths
+    hundredths = parseInt(hundredthsStr.substring(0, 2), 10);
+  }
+
   if (isNaN(minutes) || isNaN(seconds) || isNaN(hundredths) ||
       minutes < 0 || seconds < 0 || seconds >= 60 || hundredths < 0 || hundredths >= 100) {
     return Infinity;
