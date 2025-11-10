@@ -27,8 +27,9 @@ export const useStandards = (age: string, gender: string, course: string) => {
       setIsLoading(true);
       try {
         const promises = coursesToFetch.map(async (c) => {
+          const baseUrl = import.meta.env.BASE_URL;
           const response = await fetch(
-            `standards/${ageGroupKey}-${genderKey}-${c}.json`
+            `${baseUrl}standards/${ageGroupKey}-${genderKey}-${c}.json`
           );
           const data = response.ok ? await response.json() : [];
 
