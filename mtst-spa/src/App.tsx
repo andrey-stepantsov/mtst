@@ -45,6 +45,10 @@ const EventRow = ({
   const cutInfo = getCutInfo(event.time, eventStandards);
   const rowClass = index % 2 === 1 ? 'odd-row' : 'even-row';
 
+  if (cutInfo.achievedCut === 'Enter a valid time (mm:ss.ff)') {
+    cutInfo.achievedCut = 'N/A';
+  }
+
   return (
     <div {...handlers} style={{ display: 'contents' }}>
       <div className={`grid-cell event-name-cell ${rowClass}`}>{event.name}</div>
