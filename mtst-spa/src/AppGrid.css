@@ -169,9 +169,9 @@
 
 /* NEW: Styles for alternating row colors */
 .even-row {
-  background-color: #fafafa; /* Light gray for odd-numbered rows (1st, 3rd, etc.) */
+  background-color: #ffffff; /* White for odd-numbered rows (1st, 3rd, etc.) */
 }
 
 .odd-row {
-  background-color: #f0f0f0; /* Darker gray for even-numbered rows (2nd, 4th, etc.) */
+  background-color: #f2f2f2; /* Light gray for even-numbered rows (2nd, 4th, etc.) */
 }
