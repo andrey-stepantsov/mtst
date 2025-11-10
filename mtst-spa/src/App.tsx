@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import './AppGrid.css';
+import './AppBar.css';
 import { SelectedEvent, StandardTime } from './types';
 import { ALL_EVENTS } from './constants';
 import { getCutInfo } from './utils/standards';
@@ -74,6 +75,14 @@ const EventRow = ({
         )}
       </div>
     </div>
+  );
+};
+
+const AppBar = () => {
+  return (
+    <header className="app-bar">
+      <h1>MTST</h1>
+    </header>
   );
 };
 
@@ -208,91 +217,94 @@ function App() {
 
   return (
     <>
-      <div className="card">
-        <div className="top-controls">
-          <div>
-            <label htmlFor="swimmer-name-input">Swimmer Name:</label>
-            <input
-              id="swimmer-name-input"
-              type="text"
-              value={swimmerName}
-              onChange={(e) => setSwimmerName(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor="age-select">Age:</label>
-            <select id="age-select" value={age} onChange={(e) => setAge(e.target.value)}>
-              {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
-                <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
-              ))}
-            </select>
+      <AppBar />
+      <main className="main-content">
+        <div className="card">
+          <div className="top-controls">
+            <div>
+              <label htmlFor="swimmer-name-input">Swimmer Name:</label>
+              <input
+                id="swimmer-name-input"
+                type="text"
+                value={swimmerName}
+                onChange={(e) => setSwimmerName(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="age-select">Age:</label>
+              <select id="age-select" value={age} onChange={(e) => setAge(e.target.value)}>
+                {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
+                  <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="gender-select">Gender:</label>
+              <select id="gender-select" value={gender} onChange={(e) => setGender(e.target.value)}>
+                <option value="Boys">Boys</option>
+                <option value="Girls">Girls</option>
+              </select>
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="gender-select">Gender:</label>
-            <select id="gender-select" value={gender} onChange={(e) => setGender(e.target.value)}>
-              <option value="Boys">Boys</option>
-              <option value="Girls">Girls</option>
-            </select>
+          <div className="course-groups-container">
+            {/* SCY Group */}
+            <div className="course-group">
+              <h2>SCY Events</h2>
+              <div className="controls-grid">
+                <div className="event-select-wrapper">
+                  <label htmlFor="scy-event-select">Event:</label>
+                  {isLoadingScy && <span className="loading-indicator"> Loading...</span>}
+                  <select
+                    id="scy-event-select"
+                    value={scySelectedEventInDropdown}
+                    onChange={(e) => setScySelectedEventInDropdown(e.target.value)}
+                    disabled={scyEventsForDropdown.length === 0}
+                  >
+                    {scyEventsForDropdown.length > 0 ? (
+                      scyEventsForDropdown.map((event) => <option key={event} value={event}>{event}</option>)
+                    ) : (
+                      <option value="" disabled>No events available</option>
+                    )}
+                  </select>
+                </div>
+                <button onClick={() => handleAddEvent('SCY')} disabled={scyEventsForDropdown.length === 0} className="icon-button add-button" title="Add SCY event">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
+              </div>
+              {renderEventsGrid('SCY', selectedEvents.SCY || [], scyStandards)}
+            </div>
+
+            {/* LCM Group */}
+            <div className="course-group">
+              <h2>LCM Events</h2>
+              <div className="controls-grid">
+                <div className="event-select-wrapper">
+                  <label htmlFor="lcm-event-select">Event:</label>
+                  {isLoadingLcm && <span className="loading-indicator"> Loading...</span>}
+                  <select
+                    id="lcm-event-select"
+                    value={lcmSelectedEventInDropdown}
+                    onChange={(e) => setLcmSelectedEventInDropdown(e.target.value)}
+                    disabled={lcmEventsForDropdown.length === 0}
+                  >
+                    {lcmEventsForDropdown.length > 0 ? (
+                      lcmEventsForDropdown.map((event) => <option key={event} value={event}>{event}</option>)
+                    ) : (
+                      <option value="" disabled>No events available</option>
+                    )}
+                  </select>
+                </div>
+                <button onClick={() => handleAddEvent('LCM')} disabled={lcmEventsForDropdown.length === 0} className="icon-button add-button" title="Add LCM event">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
+              </div>
+              {renderEventsGrid('LCM', selectedEvents.LCM || [], lcmStandards)}
+            </div>
           </div>
         </div>
-
-        <div className="course-groups-container">
-          {/* SCY Group */}
-          <div className="course-group">
-            <h2>SCY Events</h2>
-            <div className="controls-grid">
-              <div className="event-select-wrapper">
-                <label htmlFor="scy-event-select">Event:</label>
-                {isLoadingScy && <span className="loading-indicator"> Loading...</span>}
-                <select
-                  id="scy-event-select"
-                  value={scySelectedEventInDropdown}
-                  onChange={(e) => setScySelectedEventInDropdown(e.target.value)}
-                  disabled={scyEventsForDropdown.length === 0}
-                >
-                  {scyEventsForDropdown.length > 0 ? (
-                    scyEventsForDropdown.map((event) => <option key={event} value={event}>{event}</option>)
-                  ) : (
-                    <option value="" disabled>No events available</option>
-                  )}
-                </select>
-              </div>
-              <button onClick={() => handleAddEvent('SCY')} disabled={scyEventsForDropdown.length === 0} className="icon-button add-button" title="Add SCY event">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              </button>
-            </div>
-            {renderEventsGrid('SCY', selectedEvents.SCY || [], scyStandards)}
-          </div>
-
-          {/* LCM Group */}
-          <div className="course-group">
-            <h2>LCM Events</h2>
-            <div className="controls-grid">
-              <div className="event-select-wrapper">
-                <label htmlFor="lcm-event-select">Event:</label>
-                {isLoadingLcm && <span className="loading-indicator"> Loading...</span>}
-                <select
-                  id="lcm-event-select"
-                  value={lcmSelectedEventInDropdown}
-                  onChange={(e) => setLcmSelectedEventInDropdown(e.target.value)}
-                  disabled={lcmEventsForDropdown.length === 0}
-                >
-                  {lcmEventsForDropdown.length > 0 ? (
-                    lcmEventsForDropdown.map((event) => <option key={event} value={event}>{event}</option>)
-                  ) : (
-                    <option value="" disabled>No events available</option>
-                  )}
-                </select>
-              </div>
-              <button onClick={() => handleAddEvent('LCM')} disabled={lcmEventsForDropdown.length === 0} className="icon-button add-button" title="Add LCM event">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              </button>
-            </div>
-            {renderEventsGrid('LCM', selectedEvents.LCM || [], lcmStandards)}
-          </div>
-        </div>
-      </div>
+      </main>
     </>
   );
 }

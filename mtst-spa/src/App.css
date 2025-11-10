@@ -1,4 +1,12 @@
 #root {
+  /* The app bar will span full width, so remove max-width, margin, padding, text-align from root */
+  /* max-width: 1280px; */
+  /* margin: 0 auto; */
+  /* padding: 2rem; */
+  /* text-align: center; */
+}
+
+.main-content {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
