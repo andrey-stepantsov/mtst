@@ -6,6 +6,7 @@ const FILTERS_KEY = 'userFilters';
 interface UserFilters {
   age: string;
   gender: string;
+  swimmerName: string;
 }
 
 export function loadSelectedEvents(): { [course: string]: SelectedEvent[] } {

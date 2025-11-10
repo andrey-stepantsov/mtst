@@ -82,6 +82,7 @@ function App() {
 
   // State for filter selections
   const initialFilters = loadUserFilters();
+  const [swimmerName, setSwimmerName] = useState(initialFilters.swimmerName || "Swimmer");
   const [age, setAge] = useState(initialFilters.age || "10&U");
   const [gender, setGender] = useState(initialFilters.gender || "Girls");
 
@@ -99,8 +100,8 @@ function App() {
 
   // Persist filters to localStorage
   useEffect(() => {
-    saveUserFilters({ age, gender });
-  }, [age, gender]);
+    saveUserFilters({ age, gender, swimmerName });
+  }, [age, gender, swimmerName]);
 
   // Helper function to get standards for a specific event based on current filters
   const getEventStandards = (eventName: string, standards: StandardTime[] | undefined): StandardTime | undefined => {
@@ -209,6 +210,15 @@ function App() {
     <>
       <div className="card">
         <div className="top-controls">
+          <div>
+            <label htmlFor="swimmer-name-input">Swimmer Name:</label>
+            <input
+              id="swimmer-name-input"
+              type="text"
+              value={swimmerName}
+              onChange={(e) => setSwimmerName(e.target.value)}
+            />
+          </div>
           <div>
             <label htmlFor="age-select">Age:</label>
             <select id="age-select" value={age} onChange={(e) => setAge(e.target.value)}>
