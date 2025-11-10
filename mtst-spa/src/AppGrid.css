@@ -96,10 +96,25 @@
 /* NEW: Grid for displaying selected events */
 .selected-events-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr auto; /* Event, Time, Current, Next, Diff, Action */
-  gap: 10px 15px; /* row-gap column-gap */
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 10px 0; /* row-gap, no column-gap */
   margin-top: 20px;
+}
+
+.grid-header-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr auto; /* Event, Time, Current, Next, Diff, Action */
+  gap: 0 15px; /* column-gap */
+  padding: 0 8px; /* Match event-row-wrapper padding */
+}
+
+.event-row-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr auto; /* Event, Time, Current, Next, Diff, Action */
+  gap: 0 15px; /* column-gap */
+  align-items: center;
+  border-radius: 4px;
+  padding: 0 8px;
 }
 
 /* NEW: Style for grid headers */
@@ -118,7 +133,6 @@
   display: flex;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid #eee;
   min-width: 0; /* Prevents content from overflowing grid cell */
 }
 

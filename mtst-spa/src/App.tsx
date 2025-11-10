@@ -46,9 +46,9 @@ const EventRow = ({
   const rowClass = index % 2 === 1 ? 'odd-row' : 'even-row';
 
   return (
-    <div {...handlers} style={{ display: 'contents' }}>
-      <div className={`grid-cell event-name-cell ${rowClass}`}>{event.name}</div>
-      <div className={`grid-cell ${rowClass}`}>
+    <div {...handlers} className={`event-row-wrapper ${rowClass}`}>
+      <div className="grid-cell event-name-cell">{event.name}</div>
+      <div className="grid-cell">
         <input
           type="text"
           value={event.time}
@@ -57,14 +57,14 @@ const EventRow = ({
           title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
         />
       </div>
-      <div className={`grid-cell ${rowClass}`}>{cutInfo.achievedCut}</div>
-      <div className={`grid-cell ${rowClass}`}>{cutInfo.nextCut || 'N/A'}</div>
-      <div className={`grid-cell ${rowClass}`}>
+      <div className="grid-cell">{cutInfo.achievedCut}</div>
+      <div className="grid-cell">{cutInfo.nextCut || 'N/A'}</div>
+      <div className="grid-cell">
         {cutInfo.absoluteDiff && cutInfo.relativeDiff
           ? `${cutInfo.absoluteDiff} / ${cutInfo.relativeDiff}`
           : 'N/A'}
       </div>
-      <div className={`grid-cell action-cell ${rowClass}`}>
+      <div className="grid-cell action-cell">
         {isMobile ? (
           <span className="swipe-hint" title="Swipe left to delete">&larr;</span>
         ) : (
@@ -175,12 +175,14 @@ function App() {
 
     return (
       <div className="selected-events-grid">
-        <div className="grid-header">Event</div>
-        <div className="grid-header">Time</div>
-        <div className="grid-header">Current Cut</div>
-        <div className="grid-header">Next Cut</div>
-        <div className="grid-header">Difference</div>
-        <div className="grid-header">Action</div>
+        <div className="grid-header-wrapper">
+          <div className="grid-header">Event</div>
+          <div className="grid-header">Time</div>
+          <div className="grid-header">Current Cut</div>
+          <div className="grid-header">Next Cut</div>
+          <div className="grid-header">Difference</div>
+          <div className="grid-header">Action</div>
+        </div>
 
         {events.map((event, index) => (
           <EventRow
