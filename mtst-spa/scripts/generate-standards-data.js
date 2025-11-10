@@ -7,8 +7,8 @@ const { parse } = require('csv-parse');
                                                                                                                                                                                       
 // When this script runs via `npm run --prefix mtst-spa`, process.cwd() will be 'mtst-spa'.                                                                                           
 // So, paths need to be relative to 'mtst-spa'.                                                                                                                                       
-const STANDARDS_DIR = path.resolve(process.cwd(), '../standards'); // 'standards' directory is one level up from 'mtst-spa'                                                           
-const OUTPUT_FILE = path.resolve(process.cwd(), 'public/standards.json'); // 'public' directory is inside 'mtst-spa'                                                                  
+const STANDARDS_DIR = path.resolve(process.cwd(), '../standards'); // 'standards' directory is one level up from 'mtst-spa'
+const OUTPUT_DIR = path.resolve(process.cwd(), 'public/standards'); // Output directory for individual JSON files
                                                                                                                                                                                       
 async function parseCsvFile(filePath) {                                                                                                                                               
     const fileContent = await fs.promises.readFile(filePath, 'utf8');                                                                                                                 
