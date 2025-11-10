@@ -80,14 +80,11 @@ const EventRow = ({
 
 interface AppBarProps {
   swimmerName: string;
-  onSwimmerNameChange: (name: string) => void;
   age: string;
-  onAgeChange: (age: string) => void;
   gender: string;
-  onGenderChange: (gender: string) => void;
 }
 
-const AppBar = ({ swimmerName, onSwimmerNameChange, age, onAgeChange, gender, onGenderChange }: AppBarProps) => {
+const AppBar = ({ swimmerName, age, gender }: AppBarProps) => {
   return (
     <header className="app-bar">
       <div className="app-bar-control">
@@ -95,13 +92,13 @@ const AppBar = ({ swimmerName, onSwimmerNameChange, age, onAgeChange, gender, on
           id="app-bar-swimmer-name"
           type="text"
           value={swimmerName}
-          onChange={(e) => onSwimmerNameChange(e.target.value)}
           placeholder="Swimmer Name"
+          readOnly
         />
       </div>
       <div className="app-bar-control">
         <label htmlFor="app-bar-age-select">Age:</label>
-        <select id="app-bar-age-select" value={age} onChange={(e) => onAgeChange(e.target.value)}>
+        <select id="app-bar-age-select" value={age} disabled>
           {["10&U", "11-12", "13-14", "15-16", "17-18"].map((ageBracket) => (
             <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
           ))}
@@ -109,7 +106,7 @@ const AppBar = ({ swimmerName, onSwimmerNameChange, age, onAgeChange, gender, on
       </div>
       <div className="app-bar-control">
         <label htmlFor="app-bar-gender-select">Gender:</label>
-        <select id="app-bar-gender-select" value={gender} onChange={(e) => onGenderChange(e.target.value)}>
+        <select id="app-bar-gender-select" value={gender} disabled>
           <option value="Boys">Boys</option>
           <option value="Girls">Girls</option>
         </select>
@@ -251,11 +248,8 @@ function App() {
     <>
       <AppBar
         swimmerName={swimmerName}
-        onSwimmerNameChange={setSwimmerName}
         age={age}
-        onAgeChange={setAge}
         gender={gender}
-        onGenderChange={setGender}
       />
       <main className="main-content">
         <div className="card">
