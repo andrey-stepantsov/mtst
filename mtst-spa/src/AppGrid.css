@@ -146,3 +146,12 @@
   border: 1px solid #ccc;
   border-radius: 3px;
 }
+
+/* NEW: Styles for alternating row colors */
+.even-row {
+  /* The default background is white, but we can be explicit */
+}
+
+.odd-row {
+  background-color: #f9f9f9; /* A very light gray for the odd rows */
+}

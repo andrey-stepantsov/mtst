@@ -14,6 +14,7 @@ import {
 
 interface EventRowProps {
   course: 'SCY' | 'LCM';
+  index: number;
   event: SelectedEvent;
   standards: StandardTime[] | undefined;
   handleRemoveEvent: (course: 'SCY' | 'LCM', eventToRemoveName: string) => void;
@@ -23,6 +24,7 @@ interface EventRowProps {
 
 const EventRow = ({
   course,
+  index,
   event,
   standards,
   handleRemoveEvent,
@@ -41,11 +43,12 @@ const EventRow = ({
 
   const eventStandards = getEventStandards(event.name, standards);
   const cutInfo = getCutInfo(event.time, eventStandards);
+  const rowClass = index % 2 === 1 ? 'odd-row' : 'even-row';
 
   return (
     <div {...handlers} style={{ display: 'contents' }}>
-      <div className="grid-cell event-name-cell">{event.name}</div>
-      <div className="grid-cell">
+      <div className={`grid-cell event-name-cell ${rowClass}`}>{event.name}</div>
+      <div className={`grid-cell ${rowClass}`}>
         <input
           type="text"
           value={event.time}
@@ -54,14 +57,14 @@ const EventRow = ({
           title="Enter time in mm:ss.ff format (minutes:seconds.hundredths)"
         />
       </div>
-      <div className="grid-cell">{cutInfo.achievedCut}</div>
-      <div className="grid-cell">{cutInfo.nextCut || 'N/A'}</div>
-      <div className="grid-cell">
+      <div className={`grid-cell ${rowClass}`}>{cutInfo.achievedCut}</div>
+      <div className={`grid-cell ${rowClass}`}>{cutInfo.nextCut || 'N/A'}</div>
+      <div className={`grid-cell ${rowClass}`}>
         {cutInfo.absoluteDiff && cutInfo.relativeDiff
           ? `${cutInfo.absoluteDiff} / ${cutInfo.relativeDiff}`
           : 'N/A'}
       </div>
-      <div className="grid-cell action-cell">
+      <div className={`grid-cell action-cell ${rowClass}`}>
         {isMobile ? (
           <span className="swipe-hint" title="Swipe left to delete">&larr;</span>
         ) : (
@@ -179,9 +182,10 @@ function App() {
         <div className="grid-header">Difference</div>
         <div className="grid-header">Action</div>
 
-        {events.map((event) => (
+        {events.map((event, index) => (
           <EventRow
             key={event.name}
+            index={index}
             course={course}
             event={event}
             standards={standards}
