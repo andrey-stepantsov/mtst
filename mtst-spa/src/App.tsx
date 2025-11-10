@@ -227,7 +227,7 @@ function App() {
           <div className="course-group">
             <h2>SCY Events</h2>
             <div className="controls-grid">
-              <div>
+              <div className="event-select-wrapper">
                 <label htmlFor="scy-event-select">Event:</label>
                 {isLoadingScy && <span className="loading-indicator"> Loading...</span>}
                 <select
@@ -254,7 +254,7 @@ function App() {
           <div className="course-group">
             <h2>LCM Events</h2>
             <div className="controls-grid">
-              <div>
+              <div className="event-select-wrapper">
                 <label htmlFor="lcm-event-select">Event:</label>
                 {isLoadingLcm && <span className="loading-indicator"> Loading...</span>}
                 <select
