@@ -152,9 +152,9 @@
 
 /* NEW: Styles for alternating row colors */
 .even-row {
-  /* The default background is white, but we can be explicit */
+  background-color: #f9f9f9; /* A light gray for the odd-numbered rows (1st, 3rd, etc.) */
 }
 
 .odd-row {
-  background-color: #f9f9f9; /* A very light gray for the odd rows */
+  background-color: #eeeeee; /* A dark gray for the even-numbered rows (2nd, 4th, etc.) */
 }
