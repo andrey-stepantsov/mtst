@@ -127,9 +127,11 @@ interface ProfileProps {
   onClose: () => void;
   onConfirm: (profile: { swimmerName: string; age: string; gender: string }) => void;
   currentProfile: { swimmerName: string; age: string; gender: string };
+  swimmerNames: string[];
+  onSwitchProfile: (name: string) => void;
 }
 
-const Profile = ({ isOpen, onClose, onConfirm, currentProfile }: ProfileProps) => {
+const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onSwitchProfile }: ProfileProps) => {
   const [name, setName] = useState(currentProfile.swimmerName);
   const [age, setAge] = useState(currentProfile.age);
   const [gender, setGender] = useState(currentProfile.gender);
@@ -149,10 +151,26 @@ const Profile = ({ isOpen, onClose, onConfirm, currentProfile }: ProfileProps) =
     onClose();
   };
 
+  const handleSwitch = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onSwitchProfile(e.target.value);
+  };
+
   return (
     <div className="profile-overlay" onClick={onClose}>
       <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
         <h2>Edit Profile</h2>
+
+        {swimmerNames.length > 1 && (
+          <div className="profile-control">
+            <label htmlFor="profile-switch">Switch Profile:</label>
+            <select id="profile-switch" value={currentProfile.swimmerName} onChange={handleSwitch}>
+              {swimmerNames.map((swimmerName) => (
+                <option key={swimmerName} value={swimmerName}>{swimmerName}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className="profile-control">
           <label htmlFor="profile-name">Swimmer Name:</label>
           <input id="profile-name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
@@ -383,6 +401,8 @@ function App() {
         onClose={() => setIsProfileModalOpen(false)}
         onConfirm={handleProfileConfirm}
         currentProfile={{ swimmerName: activeSwimmerName, age, gender }}
+        swimmerNames={Object.keys(profiles)}
+        onSwitchProfile={handleSwitchProfile}
       />
       <main className="main-content">
         <div className="card">
