@@ -10,6 +10,60 @@ interface StandardTime {
   AAAA: string;
 }
 
+// Helper function to convert mm:ss.ff string to total seconds (float)
+// Returns Infinity for invalid or empty time strings, treating them as very slow.
+const timeToSeconds = (timeString: string): number => {
+  // Basic validation for mm:ss.ff format
+  if (!timeString || !/^\d{2}:\d{2}\.\d{2}$/.test(timeString)) {
+    return Infinity;
+  }
+
+  const [minutesStr, secondsAndHundredthsStr] = timeString.split(':');
+  const [secondsStr, hundredthsStr] = secondsAndHundredthsStr.split('.');
+
+  const minutes = parseInt(minutesStr, 10);
+  const seconds = parseInt(secondsStr, 10);
+  const hundredths = parseInt(hundredthsStr, 10);
+
+  // Further validation for parsed numbers
+  if (isNaN(minutes) || isNaN(seconds) || isNaN(hundredths) ||
+      minutes < 0 || seconds < 0 || seconds >= 60 || hundredths < 0 || hundredths >= 100) {
+    return Infinity;
+  }
+
+  return (minutes * 60) + seconds + (hundredths / 100);
+};
+
+// Helper function to determine the next cut based on user's best time and event standards
+const getNextCut = (bestTime: string, standards: StandardTime): string => {
+  const userTimeInSeconds = timeToSeconds(bestTime);
+
+  if (userTimeInSeconds === Infinity) {
+    return "Enter a valid time (mm:ss.ff)";
+  }
+
+  // Convert all standard cuts to seconds for comparison
+  const aCut = timeToSeconds(standards.A);
+  const aaCut = timeToSeconds(standards.AA);
+  const aaaCut = timeToSeconds(standards.AAA);
+  const aaaaCut = timeToSeconds(standards.AAAA);
+
+  // Compare user's time against cuts. Remember: lower seconds = faster time.
+  // We are looking for the *next faster* cut the user needs to achieve.
+  // If userTime > aCut, it means the user's time is slower than the A cut, so A is the next target.
+  if (userTimeInSeconds > aCut) {
+    return `Next Cut: A (${standards.A})`;
+  } else if (userTimeInSeconds > aaCut) {
+    return `Next Cut: AA (${standards.AA})`;
+  } else if (userTimeInSeconds > aaaCut) {
+    return `Next Cut: AAA (${standards.AAA})`;
+  } else if (userTimeInSeconds > aaaaCut) {
+    return `Next Cut: AAAA (${standards.AAAA})`;
+  } else {
+    return "Achieved all cuts!";
+  }
+};
+
 interface CourseStandards {
   [course: string]: StandardTime[]; // e.g., "LCM": [{Event: "50 FR", ...}]
 }
@@ -605,12 +659,18 @@ function App() {
                   style={{ width: '100px', textAlign: 'center' }}
                 />
                 {eventStandards ? (
-                  <div className="standards-display">
-                    <span>A: {eventStandards.A}</span>
-                    <span>AA: {eventStandards.AA}</span>
-                    <span>AAA: {eventStandards.AAA}</span>
-                    <span>AAAA: {eventStandards.AAAA}</span>
-                  </div>
+                  <>
+                    <div className="standards-display">
+                      <span>A: {eventStandards.A}</span>
+                      <span>AA: {eventStandards.AA}</span>
+                      <span>AAA: {eventStandards.AAA}</span>
+                      <span>AAAA: {eventStandards.AAAA}</span>
+                    </div>
+                    {/* NEW: Display the next cut */}
+                    <div className="next-cut-display">
+                      {getNextCut(event.time, eventStandards)}
+                    </div>
+                  </>
                 ) : (
                   <span className="standards-display">Standards not found</span>
                 )}
