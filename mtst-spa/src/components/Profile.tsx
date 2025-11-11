@@ -21,17 +21,9 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
     if (isOpen) {
       setName(currentProfile.swimmerName);
       setAge(currentProfile.age);
-      // Map old gender values to new ones for a smooth transition.
-      const currentGender = currentProfile.gender;
-      if (currentGender === 'Boys') {
-        setGender('Male');
-      } else if (currentGender === 'Girls') {
-        setGender('Female');
-      } else {
-        setGender(currentGender); // Handles 'Male', 'Female', or other values
-      }
+      setGender(currentProfile.gender);
     }
-  }, [isOpen, currentProfile.swimmerName]); // Dependency changed to be more specific
+  }, [isOpen, currentProfile]);
 
   if (!isOpen) return null;
 
@@ -85,8 +77,8 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
         <div className="profile-control">
           <label htmlFor="profile-gender">Gender:</label>
           <select id="profile-gender" value={gender} onChange={(e) => setGender(e.target.value)}>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
+            <option value="Boys">Boys</option>
+            <option value="Girls">Girls</option>
           </select>
         </div>
         <div className="profile-buttons-container">
