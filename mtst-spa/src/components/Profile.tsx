@@ -89,7 +89,7 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
           <button onClick={handleNewSwimmerClick} className="profile-new-button">New Swimmer</button>
           <button onClick={handleDeleteSwimmerClick} className="profile-delete-button" disabled={swimmerNames.length <= 1}>Delete Swimmer</button>
         </div>
-        <div className="version-tag">{process.env.REACT_APP_VERSION}</div>
+        <div className="version-tag">v0.6.2</div>
       </div>
     </div>
   );

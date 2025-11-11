@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { account } from './appwrite';
 import { Models } from 'appwrite';
 import './AppGrid.css';
@@ -18,18 +18,21 @@ import { CourseEventGroup } from './components/CourseEventGroup';
 
 function App() {
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
+  const authHandled = useRef(false);
 
   useEffect(() => {
     const initializeAuth = async () => {
+      // Prevent effect from running twice in strict mode after OAuth callback
+      if (authHandled.current) {
+        return;
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const secret = urlParams.get('secret');
       const userId = urlParams.get('userId');
 
-      // This is an OAuth callback.
       if (secret && userId) {
-        // Use sessionStorage to signal that an auth process is in progress.
-        // This prevents a race condition caused by React's StrictMode.
-        sessionStorage.setItem('auth-in-progress', 'true');
+        authHandled.current = true; // Mark as handled to prevent second run
         window.history.replaceState(null, '', window.location.pathname);
         try {
           await account.updateOAuth2Session(userId, secret);
@@ -38,17 +41,9 @@ function App() {
         } catch (error) {
           console.error("Failed to complete OAuth2 login:", error);
           setUser(null);
-        } finally {
-          // Clean up the signal
-          sessionStorage.removeItem('auth-in-progress');
         }
       } else {
-        // This is a normal app load.
-        // If the signal is set, it means the first part of the auth is still running,
-        // so we should wait for it to complete before checking the session.
-        if (sessionStorage.getItem('auth-in-progress')) {
-          return;
-        }
+        // This is a normal app load, check for an existing session
         try {
           const currentUser = await account.get();
           setUser(currentUser);
