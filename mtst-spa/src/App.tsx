@@ -33,7 +33,7 @@ function App() {
         sessionStorage.setItem('auth-in-progress', 'true');
         window.history.replaceState(null, '', window.location.pathname);
         try {
-          await account.updateOAuth2Session(userId, secret);
+          await account.createSession(userId, secret);
           const currentUser = await account.get();
           setUser(currentUser);
         } catch (error) {
