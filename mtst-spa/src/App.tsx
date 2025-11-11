@@ -34,12 +34,16 @@ function App() {
 
   // Login function
   const loginWithGoogle = async () => {
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const successUrl = isLocalhost ? `${window.location.origin}/` : `${window.location.origin}/mtst/`;
+    const failureUrl = isLocalhost ? `${window.location.origin}/failure` : `${window.location.origin}/mtst/failure`;
+
     try {
       // This will redirect the user to Google's login page
       account.createOAuth2Session(
         'google',
-        'http://localhost:5173', // URL to redirect to on success
-        'http://localhost:5173/failure' // URL to redirect to on failure
+        successUrl, // URL to redirect to on success
+        failureUrl // URL to redirect to on failure
       );
     } catch (error) {
       console.error("Failed to initiate Google login:", error);
