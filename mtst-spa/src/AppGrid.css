@@ -108,7 +108,7 @@
 .selected-events-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px 0; /* row-gap, no column-gap */
+  gap: 4px 0; /* row-gap, no column-gap */
   margin-top: 20px;
 }
 
@@ -145,7 +145,7 @@
 .grid-cell {
   display: flex;
   align-items: center;
-  padding: 8px 0;
+  padding: 4px 0;
   min-width: 0; /* Prevents content from overflowing grid cell */
   font-size: 10px;
 }
