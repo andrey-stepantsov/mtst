@@ -16,6 +16,7 @@ interface AppBarProps {
 export const AppBar = ({ swimmerName, age, gender, onEdit, swimmerNames, onSwitchProfile, user, onLogin, onLogout }: AppBarProps) => {
   return (
     <header className="app-bar">
+      <div className="version-tag">v0.5.0</div>
       <div className="app-bar-control">
         <select id="app-bar-swimmer-select" value={swimmerName} onChange={(e) => onSwitchProfile(e.target.value)}>
           {swimmerNames.map((name) => (
