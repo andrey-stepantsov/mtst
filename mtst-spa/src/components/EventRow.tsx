@@ -24,6 +24,12 @@ export const EventRow = ({
   const cutInfo = getCutInfo(event.time, eventStandards);
   const rowClass = index % 2 === 1 ? 'odd-row' : 'even-row';
 
+  const handleRemoveClick = () => {
+    if (window.confirm(`Are you sure you want to remove the ${course} ${event.name}?`)) {
+      handleRemoveEvent(course, event.name);
+    }
+  };
+
   return (
     <div className={`event-row-wrapper ${rowClass}`}>
       <div className="grid-cell event-name-cell">{event.name}</div>
@@ -44,7 +50,7 @@ export const EventRow = ({
           : 'N/A'}
       </div>
       <div className="grid-cell action-cell">
-        <button onClick={() => handleRemoveEvent(course, event.name)} className="icon-button remove-button" title={`Remove ${course} event`}>
+        <button onClick={handleRemoveClick} className="icon-button remove-button" title={`Remove ${course} event`}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
