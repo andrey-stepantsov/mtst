@@ -45,7 +45,7 @@ export const AppBar = ({ swimmerName, age, gender, onEdit, swimmerNames, onSwitc
       <div className="app-bar-auth">
         {user ? (
           <>
-            <span className="user-name">Welcome, {user.name}!</span>
+            <span className="user-name">{user.name}</span>
             <button onClick={onLogout}>Logout</button>
           </>
         ) : (
