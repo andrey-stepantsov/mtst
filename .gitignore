@@ -11,12 +11,11 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Dependencies
-/node_modules/
-mtst-spa/node_modules/
+node_modules/
 
 # Build output
-mtst-spa/dist/
-mtst-spa/dist-ssr/
+dist/
+dist-ssr/
 
 # Environment variables
 .env
