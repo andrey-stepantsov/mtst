@@ -32,6 +32,31 @@ function App() {
     checkSession();
   }, []);
 
+  // This effect handles the OAuth2 callback from Google
+  useEffect(() => {
+    const finishOAuth2Login = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const secret = urlParams.get('secret');
+      const userId = urlParams.get('userId');
+
+      if (secret && userId) {
+        try {
+          await account.updateOAuth2Session(userId, secret);
+          const currentUser = await account.get();
+          setUser(currentUser);
+        } catch (error) {
+          console.error("Failed to complete OAuth2 login:", error);
+          setUser(null);
+        } finally {
+          // Clean the URL by removing the query parameters to prevent re-triggering
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      }
+    };
+
+    finishOAuth2Login();
+  }, []);
+
   // Login function
   const loginWithGoogle = async () => {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -40,7 +65,7 @@ function App() {
 
     try {
       // This will redirect the user to Google's login page
-      account.createOAuth2Session(
+      account.createOAuth2Token(
         'google',
         successUrl, // URL to redirect to on success
         failureUrl // URL to redirect to on failure
