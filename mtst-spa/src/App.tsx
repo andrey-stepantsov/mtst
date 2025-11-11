@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { account } from './appwrite';
 import { Models } from 'appwrite';
 import './AppGrid.css';
@@ -18,21 +18,19 @@ import { CourseEventGroup } from './components/CourseEventGroup';
 
 function App() {
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
-  const authHandled = useRef(false);
 
   useEffect(() => {
     const initializeAuth = async () => {
-      // Prevent effect from running twice in strict mode after OAuth callback
-      if (authHandled.current) {
-        return;
-      }
-
       const urlParams = new URLSearchParams(window.location.search);
       const secret = urlParams.get('secret');
       const userId = urlParams.get('userId');
 
       if (secret && userId) {
-        authHandled.current = true; // Mark as handled to prevent second run
+        // This is an OAuth callback. Use sessionStorage as a lock to prevent race conditions in Strict Mode.
+        if (sessionStorage.getItem('auth-in-progress')) {
+          return; // The other effect run is already handling auth.
+        }
+        sessionStorage.setItem('auth-in-progress', 'true');
         window.history.replaceState(null, '', window.location.pathname);
         try {
           await account.updateOAuth2Session(userId, secret);
@@ -41,9 +39,12 @@ function App() {
         } catch (error) {
           console.error("Failed to complete OAuth2 login:", error);
           setUser(null);
+        } finally {
+          // Clean up the lock after the auth process is complete.
+          sessionStorage.removeItem('auth-in-progress');
         }
       } else {
-        // This is a normal app load, check for an existing session
+        // This is a normal app load, check for an existing session.
         try {
           const currentUser = await account.get();
           setUser(currentUser);
