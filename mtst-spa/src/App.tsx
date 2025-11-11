@@ -26,7 +26,8 @@ function App() {
       const userId = urlParams.get('userId');
 
       if (secret && userId) {
-        // This is an OAuth callback, finish the login
+        // This is an OAuth callback. Clean the URL immediately to prevent a race condition in Strict Mode.
+        window.history.replaceState(null, '', window.location.pathname);
         try {
           await account.updateOAuth2Session(userId, secret);
           const currentUser = await account.get();
@@ -34,9 +35,6 @@ function App() {
         } catch (error) {
           console.error("Failed to complete OAuth2 login:", error);
           setUser(null);
-        } finally {
-          // Clean the URL to avoid re-triggering the login flow on refresh
-          window.history.replaceState(null, '', window.location.pathname);
         }
       } else {
         // This is a normal app load, check for an existing session
