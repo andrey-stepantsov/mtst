@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { account } from './appwrite';
+import { Models } from 'appwrite';
 import './AppGrid.css';
 import './AppBar.css';
 import './Profile.css';
@@ -15,6 +17,45 @@ import { Profile } from './components/Profile';
 import { CourseEventGroup } from './components/CourseEventGroup';
 
 function App() {
+  const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
+  // Check for an active session when the app loads
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const currentUser = await account.get();
+        setUser(currentUser);
+      } catch (error) {
+        console.log("No active session:", error);
+        setUser(null);
+      }
+    };
+    checkSession();
+  }, []); 
+  
+  // Login function
+  const loginWithGoogle = async () => {
+    try {
+      // This will redirect the user to Google's login page
+      account.createOAuth2Session(
+        'google',
+        'http://localhost:5173', // URL to redirect to on success
+        'http://localhost:5173/failure' // URL to redirect to on failure
+      );
+    } catch (error) {
+      console.error("Failed to initiate Google login:", error);
+    }
+  };
+  
+  // Logout function
+  const logout = async () => {
+    try {
+      await account.deleteSession('current');
+      setUser(null);
+    } catch (error) {
+      console.error("Failed to logout:", error);
+    }
+  };
+
   const [profiles, setProfiles] = useState<SwimmerProfiles>(loadProfiles());
   const [activeSwimmerName, setActiveSwimmerName] = useState<string>(() => {
     const savedName = loadActiveSwimmerName();
@@ -187,6 +228,19 @@ function App() {
         onEdit={() => setIsProfileModalOpen(true)}
         swimmerNames={Object.keys(profiles)}
         onSwitchProfile={handleSwitchProfile}
+        {...user ? (
+          <div>
+            <p>Welcome, {user.name}!</p>
+            <button onClick={logout}>Logout</button>
+          </div>
+        ) : (
+          <div>
+            <p>Please log in to save your times.</p>
+            <button onClick={loginWithGoogle}>
+              Login with Google
+            </button>
+          </div>
+        )}        
       />
       <Profile
         isOpen={isProfileModalOpen}
