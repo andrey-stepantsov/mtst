@@ -24,7 +24,6 @@ export const AppBar = ({ swimmerName, age, gender, onEdit, swimmerNames, onSwitc
         </select>
       </div>
       <div className="app-bar-control">
-        <label htmlFor="app-bar-age-select">Age:</label>
         <select id="app-bar-age-select" value={age} disabled>
           {AGE_BRACKETS.map((ageBracket) => (
             <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
@@ -32,7 +31,6 @@ export const AppBar = ({ swimmerName, age, gender, onEdit, swimmerNames, onSwitc
         </select>
       </div>
       <div className="app-bar-control">
-        <label htmlFor="app-bar-gender-select">Gender:</label>
         <select id="app-bar-gender-select" value={gender} disabled>
           <option value="Boys">Boys</option>
           <option value="Girls">Girls</option>
