@@ -190,3 +190,23 @@
 .odd-row {
   background-color: #ffffff;
 }
+
+@media (prefers-color-scheme: dark) {
+  .course-group h2 {
+    border-bottom: 1px solid #555;
+  }
+  .event-row-wrapper {
+    color: #ffffff;
+  }
+  .grid-cell input[type="text"] {
+    border: 1px solid #444;
+    background-color: #2a2a2a;
+    color: #ffffff;
+  }
+  .even-row {
+    background-color: #353535;
+  }
+  .odd-row {
+    background-color: #151515;
+  }
+}
