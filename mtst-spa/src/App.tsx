@@ -102,7 +102,7 @@ function App() {
   });
 
   // Derived state for the active profile
-  const activeProfile = profiles[activeSwimmerName] || { age: '10&U', gender: 'Girls', selectedEvents: { SCY: [], LCM: [] } }; // Provide a default if activeSwimmerName is not found
+  const activeProfile = profiles[activeSwimmerName] || { age: '10&U', gender: 'Female', selectedEvents: { SCY: [], LCM: [] } }; // Provide a default if activeSwimmerName is not found
   const { age, gender, selectedEvents } = activeProfile;
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -191,7 +191,7 @@ function App() {
 
       const newProfile = {
         age: '10&U',
-        gender: 'Girls',
+        gender: 'Female',
         selectedEvents: { SCY: [], LCM: [] },
       };
 
