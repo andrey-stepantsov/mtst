@@ -115,7 +115,12 @@ function App() {
   const [activeSwimmerName, setActiveSwimmerName] = useState<string>(() => loadActiveSwimmerName() || 'swimmer');
 
   // Derived state for the active profile
-  const activeProfile = profiles[activeSwimmerName] || { age: '10&U', gender: 'Girls', selectedEvents: { SCY: [], LCM: [] } }; // Provide a default if activeSwimmerName is not found
+  const rawProfile = profiles[activeSwimmerName];
+  const activeProfile = {
+    age: rawProfile?.age || '10&U',
+    gender: rawProfile?.gender || 'Girls',
+    selectedEvents: rawProfile?.selectedEvents || { SCY: [], LCM: [] },
+  };
   const { age, gender, selectedEvents } = activeProfile;
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
