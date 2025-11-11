@@ -25,8 +25,11 @@ function App() {
       const secret = urlParams.get('secret');
       const userId = urlParams.get('userId');
 
+      // This is an OAuth callback.
       if (secret && userId) {
-        // This is an OAuth callback. Clean the URL immediately to prevent a race condition in Strict Mode.
+        // Use sessionStorage to signal that an auth process is in progress.
+        // This prevents a race condition caused by React's StrictMode.
+        sessionStorage.setItem('auth-in-progress', 'true');
         window.history.replaceState(null, '', window.location.pathname);
         try {
           await account.updateOAuth2Session(userId, secret);
@@ -35,14 +38,22 @@ function App() {
         } catch (error) {
           console.error("Failed to complete OAuth2 login:", error);
           setUser(null);
+        } finally {
+          // Clean up the signal
+          sessionStorage.removeItem('auth-in-progress');
         }
       } else {
-        // This is a normal app load, check for an existing session
+        // This is a normal app load.
+        // If the signal is set, it means the first part of the auth is still running,
+        // so we should wait for it to complete before checking the session.
+        if (sessionStorage.getItem('auth-in-progress')) {
+          return;
+        }
         try {
           const currentUser = await account.get();
           setUser(currentUser);
         } catch (error) {
-          // No active session is expected on a fresh load, so no need to log an error
+          // No active session is expected on a fresh load.
           setUser(null);
         }
       }
