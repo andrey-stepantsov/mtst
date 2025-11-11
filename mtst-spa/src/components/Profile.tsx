@@ -31,7 +31,7 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
         setGender(currentGender); // Handles 'Male', 'Female', or other values
       }
     }
-  }, [isOpen, currentProfile]);
+  }, [isOpen, currentProfile.swimmerName]); // Dependency changed to be more specific
 
   if (!isOpen) return null;
 
