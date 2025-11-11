@@ -40,11 +40,11 @@
 }
 
 .remove-button {
-  color: #dc3545; /* Red */
+  color: #6c757d; /* Muted gray */
 }
 
 .remove-button:hover {
-  background-color: #f8d7da; /* Light red background */
+  background-color: #e9ecef; /* Light gray background */
 }
 
 
@@ -208,5 +208,13 @@
   }
   .odd-row {
     background-color: #151515;
+  }
+
+  .remove-button {
+    color: #adb5bd; /* Lighter gray for dark mode */
+  }
+
+  .remove-button:hover {
+    background-color: #495057; /* Darker gray background for hover */
   }
 }
