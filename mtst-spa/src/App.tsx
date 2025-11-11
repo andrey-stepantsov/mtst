@@ -164,7 +164,13 @@ function App() {
 
     setProfiles(prevProfiles => {
       const newProfiles = { ...prevProfiles };
-      const currentProfile = { ...newProfiles[activeSwimmerName] };
+      const rawCurrentProfile = newProfiles[activeSwimmerName];
+
+      // Ensure the profile is well-formed before using it
+      const currentProfile = {
+        ...rawCurrentProfile,
+        selectedEvents: rawCurrentProfile?.selectedEvents || { SCY: [], LCM: [] },
+      };
 
       if (currentProfile.selectedEvents[course]?.some(e => e.name === eventNameToAdd)) {
         return prevProfiles; // No change
@@ -182,10 +188,21 @@ function App() {
   const handleRemoveEvent = (course: 'SCY' | 'LCM', eventToRemoveName: string) => {
     setProfiles(prevProfiles => {
       const newProfiles = { ...prevProfiles };
-      const currentProfile = { ...newProfiles[activeSwimmerName] };
+      const rawCurrentProfile = newProfiles[activeSwimmerName];
+
+      // If there's no profile, do nothing.
+      if (!rawCurrentProfile) {
+        return prevProfiles;
+      }
+
+      const currentProfile = {
+        ...rawCurrentProfile,
+        selectedEvents: rawCurrentProfile.selectedEvents || { SCY: [], LCM: [] },
+      };
+
       currentProfile.selectedEvents = {
         ...currentProfile.selectedEvents,
-        [course]: currentProfile.selectedEvents[course].filter((event) => event.name !== eventToRemoveName),
+        [course]: (currentProfile.selectedEvents[course] || []).filter((event) => event.name !== eventToRemoveName),
       };
       newProfiles[activeSwimmerName] = currentProfile;
       return newProfiles;
@@ -195,10 +212,21 @@ function App() {
   const handleTimeChange = (course: 'SCY' | 'LCM', eventName: string, newTime: string) => {
     setProfiles(prevProfiles => {
       const newProfiles = { ...prevProfiles };
-      const currentProfile = { ...newProfiles[activeSwimmerName] };
+      const rawCurrentProfile = newProfiles[activeSwimmerName];
+
+      // If there's no profile, do nothing.
+      if (!rawCurrentProfile) {
+        return prevProfiles;
+      }
+
+      const currentProfile = {
+        ...rawCurrentProfile,
+        selectedEvents: rawCurrentProfile.selectedEvents || { SCY: [], LCM: [] },
+      };
+
       currentProfile.selectedEvents = {
         ...currentProfile.selectedEvents,
-        [course]: currentProfile.selectedEvents[course].map((event) =>
+        [course]: (currentProfile.selectedEvents[course] || []).map((event) =>
           event.name === eventName ? { ...event, time: newTime } : event,
         ),
       };
