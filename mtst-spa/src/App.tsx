@@ -21,40 +21,60 @@ function App() {
 
   useEffect(() => {
     const initializeAuth = async () => {
+      // This function loads profiles from Appwrite, or syncs local profiles if remote is empty.
+      const loadAndSyncProfiles = async () => {
+        try {
+          const prefs = await account.getPrefs();
+          const remoteProfilesRaw = prefs.swimmers as string | undefined;
+          const localProfiles = loadProfiles();
+
+          if (remoteProfilesRaw && remoteProfilesRaw !== '{}') {
+            // Use remote profiles as the source of truth.
+            setProfiles(JSON.parse(remoteProfilesRaw));
+          } else if (Object.keys(localProfiles).length > 0) {
+            // No remote profiles, but local ones exist. Upload them.
+            setProfiles(localProfiles);
+            await account.updatePrefs({ swimmers: JSON.stringify(localProfiles) });
+          }
+          // If neither exist, profiles state remains empty {}, which is correct.
+        } catch (error) {
+          console.error("Failed to sync profiles with Appwrite. Falling back to local.", error);
+          setProfiles(loadProfiles()); // Fallback to local storage on error
+        }
+      };
+
       const urlParams = new URLSearchParams(window.location.search);
       const secret = urlParams.get('secret');
       const userId = urlParams.get('userId');
 
       if (secret && userId) {
-        // This is an OAuth callback. Use sessionStorage as a lock to prevent race conditions in Strict Mode.
-        if (sessionStorage.getItem('auth-in-progress')) {
-          return; // The other effect run is already handling auth.
-        }
+        // This is an OAuth callback.
+        if (sessionStorage.getItem('auth-in-progress')) return;
         sessionStorage.setItem('auth-in-progress', 'true');
         window.history.replaceState(null, '', window.location.pathname);
         try {
           await account.createSession(userId, secret);
           const currentUser = await account.get();
           setUser(currentUser);
+          await loadAndSyncProfiles();
         } catch (error) {
           console.error("Failed to complete OAuth2 login:", error);
           setUser(null);
+          setProfiles(loadProfiles()); // Fallback for logged-out user
         } finally {
-          // Clean up the lock after the auth process is complete.
           sessionStorage.removeItem('auth-in-progress');
         }
       } else {
-        // This is a normal app load. If an auth process is in progress, wait for it to complete.
-        if (sessionStorage.getItem('auth-in-progress')) {
-          return;
-        }
-        // Check for an existing session.
+        // This is a normal app load.
+        if (sessionStorage.getItem('auth-in-progress')) return;
         try {
           const currentUser = await account.get();
           setUser(currentUser);
+          await loadAndSyncProfiles();
         } catch (error) {
-          // No active session is expected on a fresh load.
+          // No active session, load profiles for a logged-out user.
           setUser(null);
+          setProfiles(loadProfiles());
         }
       }
     };
@@ -85,21 +105,14 @@ function App() {
     try {
       await account.deleteSession('current');
       setUser(null);
+      setProfiles({}); // Clear local profile state on logout
     } catch (error) {
       console.error("Failed to logout:", error);
     }
   };
 
-  const [profiles, setProfiles] = useState<SwimmerProfiles>(loadProfiles());
-  const [activeSwimmerName, setActiveSwimmerName] = useState<string>(() => {
-    const savedName = loadActiveSwimmerName();
-    const profileKeys = Object.keys(profiles);
-    if (savedName && profileKeys.includes(savedName)) {
-      return savedName;
-    }
-    // Fallback: if no saved name or saved name doesn't exist, use the first profile or 'swimmer'
-    return profileKeys.length > 0 ? profileKeys[0] : 'swimmer';
-  });
+  const [profiles, setProfiles] = useState<SwimmerProfiles>({});
+  const [activeSwimmerName, setActiveSwimmerName] = useState<string>(() => loadActiveSwimmerName() || 'swimmer');
 
   // Derived state for the active profile
   const activeProfile = profiles[activeSwimmerName] || { age: '10&U', gender: 'Girls', selectedEvents: { SCY: [], LCM: [] } }; // Provide a default if activeSwimmerName is not found
@@ -110,10 +123,23 @@ function App() {
   const { standardsForSelectedFilters: scyStandards, isLoading: isLoadingScy } = useStandards(age, gender, 'SCY');
   const { standardsForSelectedFilters: lcmStandards, isLoading: isLoadingLcm } = useStandards(age, gender, 'LCM');
 
-  // Persist profiles to localStorage
+  // Persist profiles
   useEffect(() => {
+    // Always save to localStorage for offline use and for logged-out users.
     saveProfiles(profiles);
-  }, [profiles]);
+
+    // Save to Appwrite preferences only when a user is logged in.
+    if (user) {
+      const saveToAppwrite = async () => {
+        try {
+          await account.updatePrefs({ swimmers: JSON.stringify(profiles) });
+        } catch (error) {
+          console.error("Failed to save profiles to Appwrite:", error);
+        }
+      };
+      saveToAppwrite();
+    }
+  }, [profiles, user]);
 
   // Persist active swimmer name to localStorage
   useEffect(() => {
