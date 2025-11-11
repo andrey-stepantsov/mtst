@@ -18,28 +18,15 @@ import { CourseEventGroup } from './components/CourseEventGroup';
 
 function App() {
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
-  // Check for an active session when the app loads
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const currentUser = await account.get();
-        setUser(currentUser);
-      } catch (error) {
-        console.log("No active session:", error);
-        setUser(null);
-      }
-    };
-    checkSession();
-  }, []);
 
-  // This effect handles the OAuth2 callback from Google
   useEffect(() => {
-    const finishOAuth2Login = async () => {
+    const initializeAuth = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const secret = urlParams.get('secret');
       const userId = urlParams.get('userId');
 
       if (secret && userId) {
+        // This is an OAuth callback, finish the login
         try {
           await account.updateOAuth2Session(userId, secret);
           const currentUser = await account.get();
@@ -48,13 +35,22 @@ function App() {
           console.error("Failed to complete OAuth2 login:", error);
           setUser(null);
         } finally {
-          // Clean the URL by removing the query parameters to prevent re-triggering
+          // Clean the URL to avoid re-triggering the login flow on refresh
           window.history.replaceState(null, '', window.location.pathname);
+        }
+      } else {
+        // This is a normal app load, check for an existing session
+        try {
+          const currentUser = await account.get();
+          setUser(currentUser);
+        } catch (error) {
+          // No active session is expected on a fresh load, so no need to log an error
+          setUser(null);
         }
       }
     };
 
-    finishOAuth2Login();
+    initializeAuth();
   }, []);
 
   // Login function
