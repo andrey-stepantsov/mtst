@@ -228,6 +228,9 @@ function App() {
         onEdit={() => setIsProfileModalOpen(true)}
         swimmerNames={Object.keys(profiles)}
         onSwitchProfile={handleSwitchProfile}
+        user={user}
+        onLogin={loginWithGoogle}
+        onLogout={logout}
       />
       <Profile
         isOpen={isProfileModalOpen}
@@ -240,23 +243,6 @@ function App() {
         onDeleteSwimmer={handleDeleteSwimmer}
       />
       <main className="main-content">
-        <div className="App">
-          <header className="App-header">
-            {user ? (
-              <div>
-                <p>Welcome, {user.name}!</p>
-                <button onClick={logout}>Logout</button>
-              </div>
-            ) : (
-              <div>
-                <p>Please log in to save your times.</p>
-                <button onClick={loginWithGoogle}>
-                  Login with Google
-                </button>
-              </div>
-            )}
-          </header>
-        </div>
         <div className="card">
           <div className="course-groups-container">
             <CourseEventGroup

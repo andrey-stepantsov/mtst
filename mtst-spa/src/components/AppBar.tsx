@@ -1,4 +1,5 @@
 import { AGE_BRACKETS } from '../constants';
+import { Models } from 'appwrite';
 
 interface AppBarProps {
   swimmerName: string;
@@ -7,9 +8,12 @@ interface AppBarProps {
   onEdit: () => void;
   swimmerNames: string[];
   onSwitchProfile: (name: string) => void;
+  user: Models.User<Models.Preferences> | null;
+  onLogin: () => void;
+  onLogout: () => void;
 }
 
-export const AppBar = ({ swimmerName, age, gender, onEdit, swimmerNames, onSwitchProfile }: AppBarProps) => {
+export const AppBar = ({ swimmerName, age, gender, onEdit, swimmerNames, onSwitchProfile, user, onLogin, onLogout }: AppBarProps) => {
   return (
     <header className="app-bar">
       <div className="version-tag">v0.4.0</div>
@@ -36,8 +40,18 @@ export const AppBar = ({ swimmerName, age, gender, onEdit, swimmerNames, onSwitc
         </select>
       </div>
       <button onClick={onEdit} className="icon-button edit-profile-button" title="Edit Profile">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12"cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
       </button>
+      <div className="app-bar-auth">
+        {user ? (
+          <>
+            <span className="user-name">Welcome, {user.name}!</span>
+            <button onClick={onLogout}>Logout</button>
+          </>
+        ) : (
+          <button onClick={onLogin}>Login with Google</button>
+        )}
+      </div>
     </header>
   );
 };
