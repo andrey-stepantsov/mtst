@@ -44,7 +44,11 @@ function App() {
           sessionStorage.removeItem('auth-in-progress');
         }
       } else {
-        // This is a normal app load, check for an existing session.
+        // This is a normal app load. If an auth process is in progress, wait for it to complete.
+        if (sessionStorage.getItem('auth-in-progress')) {
+          return;
+        }
+        // Check for an existing session.
         try {
           const currentUser = await account.get();
           setUser(currentUser);
