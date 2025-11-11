@@ -72,3 +72,9 @@
 .app-bar-control select:disabled {
   opacity: 1; /* Override browser default dimming */
 }
+
+.app-bar-auth {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
