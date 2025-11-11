@@ -30,8 +30,8 @@ function App() {
       }
     };
     checkSession();
-  }, []); 
-  
+  }, []);
+
   // Login function
   const loginWithGoogle = async () => {
     try {
@@ -45,7 +45,7 @@ function App() {
       console.error("Failed to initiate Google login:", error);
     }
   };
-  
+
   // Logout function
   const logout = async () => {
     try {
@@ -100,7 +100,7 @@ function App() {
     setProfiles(prevProfiles => {
       const newProfiles = { ...prevProfiles };
       const currentProfile = { ...newProfiles[activeSwimmerName] };
-      
+
       if (currentProfile.selectedEvents[course]?.some(e => e.name === eventNameToAdd)) {
         return prevProfiles; // No change
       }
@@ -228,19 +228,6 @@ function App() {
         onEdit={() => setIsProfileModalOpen(true)}
         swimmerNames={Object.keys(profiles)}
         onSwitchProfile={handleSwitchProfile}
-        {...user ? (
-          <div>
-            <p>Welcome, {user.name}!</p>
-            <button onClick={logout}>Logout</button>
-          </div>
-        ) : (
-          <div>
-            <p>Please log in to save your times.</p>
-            <button onClick={loginWithGoogle}>
-              Login with Google
-            </button>
-          </div>
-        )}        
       />
       <Profile
         isOpen={isProfileModalOpen}
@@ -253,6 +240,23 @@ function App() {
         onDeleteSwimmer={handleDeleteSwimmer}
       />
       <main className="main-content">
+        <div className="App">
+          <header className="App-header">
+            {user ? (
+              <div>
+                <p>Welcome, {user.name}!</p>
+                <button onClick={logout}>Logout</button>
+              </div>
+            ) : (
+              <div>
+                <p>Please log in to save your times.</p>
+                <button onClick={loginWithGoogle}>
+                  Login with Google
+                </button>
+              </div>
+            )}
+          </header>
+        </div>
         <div className="card">
           <div className="course-groups-container">
             <CourseEventGroup
