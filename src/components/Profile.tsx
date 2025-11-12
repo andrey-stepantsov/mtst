@@ -27,7 +27,7 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
       setAge(currentProfile.age);
       setGender(currentProfile.gender);
     }
-  }, [isOpen, currentProfile]);
+  }, [isOpen, currentProfile.swimmerName, currentProfile.age, currentProfile.gender]);
 
   if (!isOpen) return null;
 
