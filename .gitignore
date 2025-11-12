@@ -23,7 +23,7 @@ dist-ssr/
 
 # Generated standards data (if any)
 # This rule is for a potential aggregated file that is not currently generated.
-mtst-spa/public/standards.json
+public/standards.json
 
 # OS-generated files
 .DS_Store
