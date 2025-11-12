@@ -113,10 +113,16 @@ async function generateStandardsData() {
             groupedStandards[ageGroupKey][genderKey][course] = [];
         }
 
+        // Clean the time values in the standards object by removing asterisks and trimming whitespace.
+        const cleanedStandards = Object.entries(standards).reduce((acc, [cut, time]) => {
+            acc[cut] = time.replace(/\*/g, '').trim();
+            return acc;
+        }, {});
+
         // Create the transformed event object
         const transformedEvent = {
             Event: eventName,
-            ...standards,
+            ...cleanedStandards,
         };
 
         // Add the transformed event to the correct group
