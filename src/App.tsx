@@ -280,8 +280,13 @@ function App() {
       const newProfiles = { ...prevProfiles };
       const currentProfile = newProfiles[activeSwimmerName];
       if (currentProfile) {
+        // If unchecking and the current age is '01-10', switch it to '10&U'
+        // to ensure the selection remains valid.
+        const newAge = !checked && currentProfile.age === '01-10' ? '10&U' : currentProfile.age;
+
         newProfiles[activeSwimmerName] = {
           ...currentProfile,
+          age: newAge,
           showAgeGroupStandards: checked,
         };
       }

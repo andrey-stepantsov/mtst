@@ -22,16 +22,6 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
   const ageBracketsToShow = showAgeGroupStandards ? AGE_BRACKETS_ALL : AGE_BRACKETS_SINGLE;
 
   useEffect(() => {
-    // If the currently selected age is not in the new list of options, reset it.
-    if (!ageBracketsToShow.includes(age)) {
-      // If switching from group to single, and '01-10' was selected, switch to '10&U'.
-      if (!showAgeGroupStandards && age === '01-10') {
-        setAge('10&U');
-      }
-    }
-  }, [showAgeGroupStandards, age, ageBracketsToShow]);
-
-  useEffect(() => {
     if (isOpen) {
       setName(currentProfile.swimmerName);
       setAge(currentProfile.age);
