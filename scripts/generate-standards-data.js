@@ -9,11 +9,11 @@ const OUTPUT_DIR = path.resolve(process.cwd(), 'public/standards');
 
 // Mapping from the new data format to the application's expected format
 const ageGroupMap = {
-    '10 & under': '01-10',
-    '11-12': '11-12',
-    '13-14': '13-14',
-    '15-16': '15-16',
-    '17-18': '17-18',
+    '10 & under': '10',
+    '11-12': '11',
+    '13-14': '13',
+    '15-16': '15',
+    '17-18': '17',
 };
 
 const genderMap = {

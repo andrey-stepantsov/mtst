@@ -8,7 +8,7 @@ export const useStandards = (age: string, gender: string, course: string) => {
   useEffect(() => {
     if (!age || !gender) return;
 
-    const ageGroupKey = age === "10&U" ? "01-10" : age;
+    const ageGroupKey = age === "10&U" ? "10" : age.split('-')[0];
     const genderKey = gender === "Boys" ? "Male" : "Female";
 
     const fetchAllStandards = async () => {
@@ -73,7 +73,7 @@ export const useStandards = (age: string, gender: string, course: string) => {
   }, [age, gender, standards]);
 
   const standardsForSelectedFilters = useMemo((): StandardTime[] | undefined => {
-    const ageGroupKey = age === "10&U" ? "01-10" : age;
+    const ageGroupKey = age === "10&U" ? "10" : age.split('-')[0];
     const genderKey = gender === "Boys" ? "Male" : "Female";
     const courseKey = course;
     return standards[ageGroupKey]?.[genderKey]?.[courseKey];
