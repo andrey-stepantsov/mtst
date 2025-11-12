@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { AGE_BRACKETS } from '../constants';
-import packageJson from '../../package.json';
 
 interface ProfileProps {
   isOpen: boolean;
@@ -90,7 +89,7 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
           <button onClick={handleNewSwimmerClick} className="profile-new-button">New Swimmer</button>
           <button onClick={handleDeleteSwimmerClick} className="profile-delete-button" disabled={swimmerNames.length <= 1}>Delete Swimmer</button>
         </div>
-        <div className="version-tag">v{packageJson.version}</div>
+        <div className="version-tag">v{__APP_VERSION__}</div>
       </div>
     </div>
   );

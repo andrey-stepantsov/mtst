@@ -13,6 +13,14 @@
   z-index: 1000;
 }
 
+.version-tag {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
 @media (prefers-color-scheme: dark) {
   .profile-modal {
     background-color: #242424;
@@ -74,6 +82,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  position: relative; /* Add this line */
 }
 
 .profile-modal h2 {
