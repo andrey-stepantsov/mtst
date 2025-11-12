@@ -21,7 +21,7 @@ This project was bootstrapped with [Vite](https://vitejs.dev/) and [React](https
 
 ### Getting Started
 
-1.  Clone the repository and navigate into the `mtst-spa` directory.
+1.  Clone the repository.
 
 2.  Install dependencies:
     ```sh
@@ -45,4 +45,31 @@ To update the standards:
     ```sh
     npm run generate-standards
     ```
-    This script will parse the CSV files and output JSON files into the `mtst-spa/public/standards/` directory.
+    This script will parse the CSV files and output JSON files into the `public/standards/` directory.
+
+## Deployment
+
+This application is configured for deployment to two different environments: GitHub Pages (for a sub-path) and Cloudflare Pages (for the root path).
+
+### GitHub Pages
+
+To deploy the application to a sub-path on GitHub Pages (e.g., `https://<username>.github.io/<repo-name>/`), run the following command:
+
+```sh
+npm run deploy
+```
+
+This command builds the application with the correct base path and uses the `gh-pages` package to push the contents of the `dist` directory to the `gh-pages` branch of your repository.
+
+### Cloudflare Pages
+
+To deploy to a root domain via Cloudflare Pages, you will use a Git-integrated workflow.
+
+1.  Push your code to your GitHub repository.
+2.  In the Cloudflare dashboard, create a new Pages project and connect it to your GitHub repository.
+3.  Use the following build settings:
+    -   **Framework preset:** `Vite`
+    -   **Build command:** `npm run build`
+    -   **Build output directory:** `dist`
+
+Cloudflare will automatically build and deploy your site whenever you push new commits to your main branch.
