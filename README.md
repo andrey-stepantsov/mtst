@@ -1,4 +1,4 @@
-# Swimming Motivational Time Standards Tracker
+# Montana Swimming Time Standards Calculator
 
 A single-page application to help swimmers and coaches easily check swimming times against the official Montana Swimming time standards for various age groups and courses.
 
@@ -12,7 +12,7 @@ A single-page application to help swimmers and coaches easily check swimming tim
 
 ## Development
 
-This repository contains the `mtst-spa` single-page application. The application was bootstrapped with [Vite](https://vitejs.dev/) and [React](https://react.dev/).
+This project was bootstrapped with [Vite](https://vitejs.dev/) and [React](https://react.dev/).
 
 ### Prerequisites
 
@@ -21,19 +21,14 @@ This repository contains the `mtst-spa` single-page application. The application
 
 ### Getting Started
 
-1.  Clone the repository.
+1.  Clone the repository and navigate into the `mtst-spa` directory.
 
-2.  Navigate into the application directory:
-    ```sh
-    cd mtst-spa
-    ```
-
-3.  Install dependencies:
+2.  Install dependencies:
     ```sh
     npm install
     ```
 
-4.  Run the development server:
+3.  Run the development server:
     ```sh
     npm run dev
     ```
@@ -41,16 +36,13 @@ This repository contains the `mtst-spa` single-page application. The application
 
 ### Managing Standards Data
 
-The swimming time standards are sourced from CSV files located in the `standards/` directory at the root of this repository.
-
-The `mtst-spa` application contains a script to process these CSV files into a JSON format that the application uses.
+The swimming time standards are sourced from CSV files located in the `standards/` directory at the root of the repository.
 
 To update the standards:
 
 1.  Place the new or updated CSV files in the `standards/` directory. The file naming convention is important for the data generation script.
-2.  Navigate into the `mtst-spa` directory if you are not already there.
-3.  Run the script to process the CSVs and generate the JSON data:
+2.  Run the script to process the CSVs and generate the JSON data used by the application:
     ```sh
     npm run generate-standards
     ```
-    This script will parse the CSV files from `../standards/` and output JSON files into the `mtst-spa/public/standards/` directory.
+    This script will parse the CSV files and output JSON files into the `mtst-spa/public/standards/` directory.
