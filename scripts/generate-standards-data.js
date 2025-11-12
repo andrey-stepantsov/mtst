@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
 // Define paths relative to the project root
 const STANDARDS_DIR = path.resolve(process.cwd(), 'standards');
