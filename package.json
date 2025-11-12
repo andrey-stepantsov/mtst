@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-standards": "node scripts/generate-standards-data.js",
+    "generate-standards": "node scripts/generate-standards-data.cjs",
     "deploy": "VITE_DEPLOY_TARGET=gh-pages npm run build && gh-pages -d dist",
     "check-deps": "depcheck",
     "release": "sh scripts/release.sh"
