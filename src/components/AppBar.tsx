@@ -1,4 +1,4 @@
-import { AGE_BRACKETS } from '../constants';
+import { AGE_BRACKETS_ALL } from '../constants';
 import { Models } from 'appwrite';
 
 interface AppBarProps {
@@ -30,7 +30,7 @@ export const AppBar = ({ swimmerName, age, gender, onEdit, swimmerNames, onSwitc
         </select>
         <span>/</span>
         <select id="app-bar-age-select" value={age} disabled>
-          {AGE_BRACKETS.map((ageBracket) => (
+          {AGE_BRACKETS_ALL.map((ageBracket) => (
             <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
           ))}
         </select>
