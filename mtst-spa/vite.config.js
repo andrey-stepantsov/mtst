@@ -7,13 +7,16 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/mtst/' : '/',
-  plugins: [react()],
-  resolve: {
-    alias: {
-      'react': path.resolve(__dirname, 'node_modules/react'),
-      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+export default defineConfig(({ command }) => {
+  const base = (command === 'build' && process.env.VITE_DEPLOY_TARGET === 'gh-pages') ? '/mtst/' : '/'
+  return {
+    base: base,
+    plugins: [react()],
+    resolve: {
+      alias: {
+        'react': path.resolve(__dirname, 'node_modules/react'),
+        'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+      }
     }
   }
-}));
+});
