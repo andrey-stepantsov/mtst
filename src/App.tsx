@@ -84,9 +84,8 @@ function App() {
 
   // Login function
   const loginWithGoogle = async () => {
-    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const successUrl = isLocalhost ? `${window.location.origin}/` : `${window.location.origin}/mtst/`;
-    const failureUrl = isLocalhost ? `${window.location.origin}/failure` : `${window.location.origin}/mtst/failure`;
+    const successUrl = `${window.location.origin}/`;
+    const failureUrl = `${window.location.origin}/failure`;
 
     try {
       // This will redirect the user to Google's login page
