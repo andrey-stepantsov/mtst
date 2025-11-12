@@ -3,7 +3,8 @@ import path from 'path';
 
 // Define paths relative to the project root
 const STANDARDS_DIR = path.resolve(process.cwd(), 'standards');
-const INPUT_FILE = path.join(STANDARDS_DIR, '2028-motivational-standards-age-group.json');
+const INPUT_FILE_AGE_GROUP = path.join(STANDARDS_DIR, '2028-motivational-standards-age-group.json');
+const INPUT_FILE_SINGLE_AGE = path.join(STANDARDS_DIR, '2028-motivational-standards-single-age.json');
 const OUTPUT_DIR = path.resolve(process.cwd(), 'public/standards');
 
 // Mapping from the new data format to the application's expected format
@@ -20,19 +21,58 @@ const genderMap = {
     'Boys': 'Male',
 };
 
+// Helper to map single ages to the age groups used in the age-group file
+function getAgeGroupFromAge(age) {
+    const ageNum = parseInt(age, 10);
+    if (ageNum <= 10) return '10 & under';
+    if (ageNum <= 12) return '11-12';
+    if (ageNum <= 14) return '13-14';
+    if (ageNum <= 16) return '15-16';
+    if (ageNum <= 18) return '17-18';
+    return null;
+}
+
 async function generateStandardsData() {
     // Ensure the output directory exists
     await fs.promises.mkdir(OUTPUT_DIR, { recursive: true });
     console.log(`Ensured output directory exists: ${OUTPUT_DIR}`);
 
-    // Read the source JSON file
-    let sourceData;
+    // Read and process both source JSON files
+    let sourceData = [];
     try {
-        const fileContent = await fs.promises.readFile(INPUT_FILE, 'utf8');
-        sourceData = JSON.parse(fileContent);
+        const ageGroupContent = await fs.promises.readFile(INPUT_FILE_AGE_GROUP, 'utf8');
+        sourceData.push(...JSON.parse(ageGroupContent));
     } catch (error) {
-        console.error(`Error reading or parsing input file (${INPUT_FILE}):`, error);
-        return;
+        if (error.code !== 'ENOENT') {
+            console.error(`Error reading or parsing age-group standards file (${INPUT_FILE_AGE_GROUP}):`, error);
+        } else {
+            console.log(`Info: Age-group standards file not found, skipping. (${INPUT_FILE_AGE_GROUP})`);
+        }
+    }
+
+    try {
+        const singleAgeContent = await fs.promises.readFile(INPUT_FILE_SINGLE_AGE, 'utf8');
+        const singleAgeData = JSON.parse(singleAgeContent);
+
+        const transformedSingleAgeData = singleAgeData.map(record => {
+            const ageGroup = getAgeGroupFromAge(record.age);
+            if (!ageGroup) {
+                console.warn(`Skipping record with unmapped single age: ${record.age}`);
+                return null;
+            }
+            return {
+                ...record,
+                age: ageGroup,
+            };
+        }).filter(Boolean); // remove nulls from failed mappings
+
+        sourceData.push(...transformedSingleAgeData);
+    } catch (error) {
+        if (error.code !== 'ENOENT') {
+            console.error(`Error reading or parsing single-age standards file (${INPUT_FILE_SINGLE_AGE}):`, error);
+        } else {
+            console.log(`Info: Single-age standards file not found, skipping. (${INPUT_FILE_SINGLE_AGE})`);
+        }
     }
 
     // Group standards by age, gender, and course
