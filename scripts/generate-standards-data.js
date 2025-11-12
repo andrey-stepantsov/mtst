@@ -7,13 +7,21 @@ const INPUT_FILE_AGE_GROUP = path.join(STANDARDS_DIR, '2028-motivational-standar
 const INPUT_FILE_SINGLE_AGE = path.join(STANDARDS_DIR, '2028-motivational-standards-single-age.json');
 const OUTPUT_DIR = path.resolve(process.cwd(), 'public/standards');
 
-// Mapping from the new data format to the application's expected format
-const ageGroupMap = {
+// Mappings from the new data format to the filename keys
+const ageGroupMapForSingleAgeFile = {
     '10 & under': '10',
     '11-12': '11',
     '13-14': '13',
     '15-16': '15',
     '17-18': '17',
+};
+
+const ageGroupMapForGroupFile = {
+    '10 & under': '01-10',
+    '11-12': '11-12',
+    '13-14': '13-14',
+    '15-16': '15-16',
+    '17-18': '17-18',
 };
 
 const genderMap = {
@@ -75,7 +83,7 @@ async function generateStandardsData() {
         }
     }
 
-    // Group standards by age, gender, and course
+    // Group standards by original age group string (e.g., '10 & under')
     const groupedStandards = {};
 
     for (const record of sourceData) {
@@ -86,11 +94,10 @@ async function generateStandardsData() {
         const course = eventParts.pop(); // SCY, SCM, LCM
         const eventName = eventParts.join(' ');
 
-        // Map age group and gender to the format used for filenames
-        const ageGroupKey = ageGroupMap[age];
+        const ageGroupKey = age; // e.g., '10 & under', '11-12'
         const genderKey = genderMap[gender];
 
-        if (!ageGroupKey || !genderKey) {
+        if (!ageGroupMapForSingleAgeFile[ageGroupKey] || !genderKey) {
             console.warn(`Skipping record with unmapped age/gender: ${age}, ${gender}`);
             continue;
         }
@@ -116,19 +123,36 @@ async function generateStandardsData() {
         groupedStandards[ageGroupKey][genderKey][course].push(transformedEvent);
     }
 
-    // Write the grouped data to individual JSON files
+    // Write the grouped data to two sets of individual JSON files
     for (const ageGroup in groupedStandards) {
         for (const gender in groupedStandards[ageGroup]) {
             for (const course in groupedStandards[ageGroup][gender]) {
                 const records = groupedStandards[ageGroup][gender][course];
-                const outputFileName = `${ageGroup}-${gender}-${course}.json`;
-                const outputFilePath = path.join(OUTPUT_DIR, outputFileName);
 
-                try {
-                    await fs.promises.writeFile(outputFilePath, JSON.stringify(records, null, 2), 'utf8');
-                    console.log(`Generated ${outputFileName}`);
-                } catch (error) {
-                    console.error(`Error writing ${outputFileName}:`, error);
+                // --- Generate single-age file (e.g., 10-Female-SCY.json) ---
+                const singleAgeFileKey = ageGroupMapForSingleAgeFile[ageGroup];
+                if (singleAgeFileKey) {
+                    const singleAgeOutputFileName = `${singleAgeFileKey}-${gender}-${course}.json`;
+                    const singleAgeOutputFilePath = path.join(OUTPUT_DIR, singleAgeOutputFileName);
+                    try {
+                        await fs.promises.writeFile(singleAgeOutputFilePath, JSON.stringify(records, null, 2), 'utf8');
+                        console.log(`Generated ${singleAgeOutputFileName}`);
+                    } catch (error) {
+                        console.error(`Error writing ${singleAgeOutputFileName}:`, error);
+                    }
+                }
+
+                // --- Generate age-group file (e.g., 01-10-Female-SCY.json) ---
+                const groupFileKey = ageGroupMapForGroupFile[ageGroup];
+                if (groupFileKey) {
+                    const groupOutputFileName = `${groupFileKey}-${gender}-${course}.json`;
+                    const groupOutputFilePath = path.join(OUTPUT_DIR, groupOutputFileName);
+                    try {
+                        await fs.promises.writeFile(groupOutputFilePath, JSON.stringify(records, null, 2), 'utf8');
+                        console.log(`Generated ${groupOutputFileName}`);
+                    } catch (error) {
+                        console.error(`Error writing ${groupOutputFileName}:`, error);
+                    }
                 }
             }
         }
