@@ -92,7 +92,7 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
             checked={showAgeGroupStandards}
             onChange={(e) => onShowAgeGroupStandardsChange(e.target.checked)}
           />
-          <label htmlFor="show-age-group-standards" style={{ marginLeft: '8px', userSelect: 'none' }}>Show Age Group Standards</label>
+          <label htmlFor="show-age-group-standards" style={{ marginLeft: '8px', userSelect: 'none' }}>Show Age Groups</label>
         </div>
         <div className="profile-buttons-container">
           <button onClick={onClose} className="profile-close-button">Close</button>
