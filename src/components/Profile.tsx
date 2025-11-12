@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AGE_BRACKETS } from '../constants';
+import { AGE_BRACKETS_SINGLE, AGE_BRACKETS_ALL } from '../constants';
 
 interface ProfileProps {
   isOpen: boolean;
@@ -18,6 +18,18 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
   const [name, setName] = useState(currentProfile.swimmerName);
   const [age, setAge] = useState(currentProfile.age);
   const [gender, setGender] = useState(currentProfile.gender);
+
+  const ageBracketsToShow = showAgeGroupStandards ? AGE_BRACKETS_ALL : AGE_BRACKETS_SINGLE;
+
+  useEffect(() => {
+    // If the currently selected age is not in the new list of options, reset it.
+    if (!ageBracketsToShow.includes(age)) {
+      // If switching from group to single, and '01-10' was selected, switch to '10&U'.
+      if (!showAgeGroupStandards && age === '01-10') {
+        setAge('10&U');
+      }
+    }
+  }, [showAgeGroupStandards, age, ageBracketsToShow]);
 
   useEffect(() => {
     if (isOpen) {
@@ -71,7 +83,7 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
         <div className="profile-control">
           <label htmlFor="profile-age">Age:</label>
           <select id="profile-age" value={age} onChange={(e) => setAge(e.target.value)}>
-            {AGE_BRACKETS.map((ageBracket) => (
+            {ageBracketsToShow.map((ageBracket) => (
               <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
             ))}
           </select>

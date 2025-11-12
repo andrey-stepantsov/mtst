@@ -125,8 +125,8 @@ function App() {
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  const { standardsForSelectedFilters: scyStandards, isLoading: isLoadingScy } = useStandards(age, gender, 'SCY');
-  const { standardsForSelectedFilters: lcmStandards, isLoading: isLoadingLcm } = useStandards(age, gender, 'LCM');
+  const { standardsForSelectedFilters: scyStandards, isLoading: isLoadingScy } = useStandards(age, gender, 'SCY', showAgeGroupStandards);
+  const { standardsForSelectedFilters: lcmStandards, isLoading: isLoadingLcm } = useStandards(age, gender, 'LCM', showAgeGroupStandards);
 
   // Persist profiles
   useEffect(() => {
