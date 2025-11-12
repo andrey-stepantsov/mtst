@@ -119,8 +119,9 @@ function App() {
     age: rawProfile?.age || '10&U',
     gender: rawProfile?.gender || 'Girls',
     selectedEvents: rawProfile?.selectedEvents || { SCY: [], LCM: [] },
+    showAgeGroupStandards: rawProfile?.showAgeGroupStandards || false,
   };
-  const { age, gender, selectedEvents } = activeProfile;
+  const { age, gender, selectedEvents, showAgeGroupStandards } = activeProfile;
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
@@ -274,6 +275,20 @@ function App() {
     }
   };
 
+  const handleShowAgeGroupStandardsChange = (checked: boolean) => {
+    setProfiles(prevProfiles => {
+      const newProfiles = { ...prevProfiles };
+      const currentProfile = newProfiles[activeSwimmerName];
+      if (currentProfile) {
+        newProfiles[activeSwimmerName] = {
+          ...currentProfile,
+          showAgeGroupStandards: checked,
+        };
+      }
+      return newProfiles;
+    });
+  };
+
   const handleProfileConfirm = (profileUpdate: { swimmerName: string; age: string; gender: string }) => {
     const { swimmerName: newName, age: newAge, gender: newGender } = profileUpdate;
     const oldName = activeSwimmerName;
@@ -333,6 +348,8 @@ function App() {
         onSwitchProfile={handleSwitchProfile}
         onNewSwimmer={handleNewSwimmer}
         onDeleteSwimmer={handleDeleteSwimmer}
+        showAgeGroupStandards={showAgeGroupStandards}
+        onShowAgeGroupStandardsChange={handleShowAgeGroupStandardsChange}
       />
       <main className="main-content">
         <div className="card">

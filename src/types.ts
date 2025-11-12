@@ -36,6 +36,7 @@ export interface SwimmerProfile {
   age: string;
   gender: string;
   selectedEvents: { [course: string]: SelectedEvent[] };
+  showAgeGroupStandards?: boolean;
 }
 
 export interface SwimmerProfiles {

@@ -10,9 +10,11 @@ interface ProfileProps {
   onSwitchProfile: (name: string) => void;
   onNewSwimmer: () => void;
   onDeleteSwimmer: (name: string) => void;
+  showAgeGroupStandards: boolean;
+  onShowAgeGroupStandardsChange: (checked: boolean) => void;
 }
 
-export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onSwitchProfile, onNewSwimmer, onDeleteSwimmer }: ProfileProps) => {
+export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onSwitchProfile, onNewSwimmer, onDeleteSwimmer, showAgeGroupStandards, onShowAgeGroupStandardsChange }: ProfileProps) => {
   const [name, setName] = useState(currentProfile.swimmerName);
   const [age, setAge] = useState(currentProfile.age);
   const [gender, setGender] = useState(currentProfile.gender);
@@ -80,6 +82,15 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
             <option value="Boys">Boys</option>
             <option value="Girls">Girls</option>
           </select>
+        </div>
+        <div className="profile-control">
+          <input
+            id="show-age-group-standards"
+            type="checkbox"
+            checked={showAgeGroupStandards}
+            onChange={(e) => onShowAgeGroupStandardsChange(e.target.checked)}
+          />
+          <label htmlFor="show-age-group-standards" style={{ marginLeft: '8px', userSelect: 'none' }}>Show Age Group Standards</label>
         </div>
         <div className="profile-buttons-container">
           <button onClick={onClose} className="profile-close-button">Close</button>
