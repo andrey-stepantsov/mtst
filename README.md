@@ -1,4 +1,4 @@
-# Montana Swimming Time Standards Calculator
+# Motivational Swimming Time Standards Calculator
 
 A single-page application to help swimmers and coaches easily check swimming times against the official Montana Swimming time standards for various age groups and courses.
 
@@ -21,17 +21,20 @@ This project was bootstrapped with [Vite](https://vitejs.dev/) and [React](https
 
 ### Getting Started
 
-1.  Clone the repository.
+1. Clone the repository.
 
-2.  Install dependencies:
+2. Install dependencies:
+
     ```sh
     npm install
     ```
 
-3.  Run the development server:
+3. Run the development server:
+
     ```sh
     npm run dev
     ```
+
     The application will be available at `http://localhost:5173`.
 
 ### Managing Standards Data
@@ -40,11 +43,13 @@ The swimming time standards are sourced from CSV files located in the `standards
 
 To update the standards:
 
-1.  Place the new or updated CSV files in the `standards/` directory. The file naming convention is important for the data generation script.
-2.  Run the script to process the CSVs and generate the JSON data used by the application:
+1. Place the new or updated CSV files in the `standards/` directory. The file naming convention is important for the data generation script.
+2. Run the script to process the CSVs and generate the JSON data used by the application:
+
     ```sh
     npm run generate-standards
     ```
+
     This script will parse the CSV files and output JSON files into the `public/standards/` directory.
 
 ## Deployment
@@ -65,11 +70,11 @@ This command builds the application with the correct base path and uses the `gh-
 
 To deploy to a root domain via Cloudflare Pages, you will use a Git-integrated workflow.
 
-1.  Push your code to your GitHub repository.
-2.  In the Cloudflare dashboard, create a new Pages project and connect it to your GitHub repository.
-3.  Use the following build settings:
-    -   **Framework preset:** `Vite`
-    -   **Build command:** `npm run build`
-    -   **Build output directory:** `dist`
+1. Push your code to your GitHub repository.
+2. In the Cloudflare dashboard, create a new Pages project and connect it to your GitHub repository.
+3. Use the following build settings:
+    - **Framework preset:** `Vite`
+    - **Build command:** `npm run build`
+    - **Build output directory:** `dist`
 
 Cloudflare will automatically build and deploy your site whenever you push new commits to your main branch.
