@@ -3,28 +3,23 @@ import path from 'path';
 import { createRequire } from 'module';                                                                                                                                               
                                                                                                                                                                                       
 const require = createRequire(import.meta.url);                                                                                                                                       
-const { parse } = require('csv-parse');                                                                                                                                               
+const { parse } = require('csv-parse/sync');                                                                                                                                               
                                                                                                                                                                                       
 // When this script runs from the project root, process.cwd() will be the project root.
 // So, paths are relative to the project root.
 const STANDARDS_DIR = path.resolve(process.cwd(), 'standards');
 const OUTPUT_DIR = path.resolve(process.cwd(), 'public/standards');
                                                                                                                                                                                       
-async function parseCsvFile(filePath) {                                                                                                                                               
-    const fileContent = await fs.promises.readFile(filePath, 'utf8');                                                                                                                 
-    return new Promise((resolve, reject) => {                                                                                                                                         
-        parse(fileContent, {
-            columns: (header) => header.map(column => column.trim().replace(/^\uFEFF/, '')), // Clean up headers
-            skip_empty_lines: true,
-            trim: true,
-        }, (err, records) => {
-            if (err) {                                                                                                                                                                
-                return reject(err);                                                                                                                                                   
-            }                                                                                                                                                                         
-            resolve(records);                                                                                                                                                         
-        });                                                                                                                                                                           
-    });                                                                                                                                                                               
-}                                                                                                                                                                                     
+async function parseCsvFile(filePath) {
+    const fileContent = await fs.promises.readFile(filePath, 'utf8');
+    const records = parse(fileContent, {
+        columns: true,
+        skip_empty_lines: true,
+        trim: true,
+        bom: true,
+    });
+    return records;
+}
                    
 async function generateStandardsData() {                                                                                                                                              
     let files;                                                                                                                                                                        
