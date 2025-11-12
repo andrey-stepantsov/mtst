@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AGE_BRACKETS_SINGLE, AGE_BRACKETS_ALL } from '../constants';
+import { AGE_BRACKETS } from '../constants';
 
 interface ProfileProps {
   isOpen: boolean;
@@ -10,16 +10,12 @@ interface ProfileProps {
   onSwitchProfile: (name: string) => void;
   onNewSwimmer: () => void;
   onDeleteSwimmer: (name: string) => void;
-  showAgeGroupStandards: boolean;
-  onShowAgeGroupStandardsChange: (checked: boolean) => void;
 }
 
-export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onSwitchProfile, onNewSwimmer, onDeleteSwimmer, showAgeGroupStandards, onShowAgeGroupStandardsChange }: ProfileProps) => {
+export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNames, onSwitchProfile, onNewSwimmer, onDeleteSwimmer }: ProfileProps) => {
   const [name, setName] = useState(currentProfile.swimmerName);
   const [age, setAge] = useState(currentProfile.age);
   const [gender, setGender] = useState(currentProfile.gender);
-
-  const ageBracketsToShow = showAgeGroupStandards ? AGE_BRACKETS_ALL : AGE_BRACKETS_SINGLE;
 
   useEffect(() => {
     if (isOpen) {
@@ -73,7 +69,7 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
         <div className="profile-control">
           <label htmlFor="profile-age">Age:</label>
           <select id="profile-age" value={age} onChange={(e) => setAge(e.target.value)}>
-            {ageBracketsToShow.map((ageBracket) => (
+            {AGE_BRACKETS.map((ageBracket) => (
               <option key={ageBracket} value={ageBracket}>{ageBracket}</option>
             ))}
           </select>
@@ -84,15 +80,6 @@ export const Profile = ({ isOpen, onClose, onConfirm, currentProfile, swimmerNam
             <option value="Boys">Boys</option>
             <option value="Girls">Girls</option>
           </select>
-        </div>
-        <div className="profile-control">
-          <input
-            id="show-age-group-standards"
-            type="checkbox"
-            checked={showAgeGroupStandards}
-            onChange={(e) => onShowAgeGroupStandardsChange(e.target.checked)}
-          />
-          <label htmlFor="show-age-group-standards" style={{ marginLeft: '8px', userSelect: 'none' }}>Show Age Groups</label>
         </div>
         <div className="profile-buttons-container">
           <button onClick={onClose} className="profile-close-button">Close</button>

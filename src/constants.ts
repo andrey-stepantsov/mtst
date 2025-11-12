@@ -21,15 +21,4 @@ export const ALL_EVENTS = [
   return lengthA - lengthB;
 });
 
-export const AGE_BRACKETS_SINGLE = ["10&U", "11-12", "13-14", "15-16", "17-18"];
-export const AGE_BRACKETS_GROUP = ["01-10", "11-12", "13-14", "15-16", "17-18"];
-
-// Combine and sort them for the "show all" view.
-// Using a Set to remove duplicates ('11-12', etc.) and then sorting.
-export const AGE_BRACKETS_ALL = [...new Set([...AGE_BRACKETS_SINGLE, ...AGE_BRACKETS_GROUP])].sort((a, b) => {
-  // Custom sort to keep '10&U' and '01-10' at the beginning and in order.
-  const aVal = parseInt(a.replace('&U', '-1').split('-')[0]);
-  const bVal = parseInt(b.replace('&U', '-1').split('-')[0]);
-  if (aVal !== bVal) return aVal - bVal;
-  return a.length - b.length; // Puts '01-10' before '10&U'
-});
+export const AGE_BRACKETS = ["10&U", "11-12", "13-14", "15-16", "17-18"];

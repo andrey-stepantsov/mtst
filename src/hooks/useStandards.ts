@@ -1,32 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AgeGroupStandards, StandardTime } from '../types';
 
-function getAgeGroupKey(age: string, showAgeGroupStandards: boolean): string {
-  if (showAgeGroupStandards) {
-    // We want group files: '01-10', '11-12', etc.
-    if (age === '10&U') {
-      return '01-10';
-    }
-    // For '01-10', '11-12', etc., the value is the key.
-    return age;
-  } else {
-    // We want single-age files: '10', '11', etc.
-    if (age === '10&U' || age === '01-10') {
-      return '10';
-    }
-    // For '11-12', '13-14', etc., take the first part.
-    return age.split('-')[0];
-  }
-}
-
-export const useStandards = (age: string, gender: string, course: string, showAgeGroupStandards: boolean) => {
+export const useStandards = (age: string, gender: string, course: string) => {
   const [standards, setStandards] = useState<AgeGroupStandards>({});
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!age || !gender) return;
 
-    const ageGroupKey = getAgeGroupKey(age, showAgeGroupStandards);
+    const ageGroupKey = age === "10&U" ? "10" : age.split('-')[0];
     const genderKey = gender === "Boys" ? "Male" : "Female";
 
     const fetchAllStandards = async () => {
@@ -88,14 +70,14 @@ export const useStandards = (age: string, gender: string, course: string, showAg
     };
 
     fetchAllStandards();
-  }, [age, gender, standards, showAgeGroupStandards]);
+  }, [age, gender, standards]);
 
   const standardsForSelectedFilters = useMemo((): StandardTime[] | undefined => {
-    const ageGroupKey = getAgeGroupKey(age, showAgeGroupStandards);
+    const ageGroupKey = age === "10&U" ? "10" : age.split('-')[0];
     const genderKey = gender === "Boys" ? "Male" : "Female";
     const courseKey = course;
     return standards[ageGroupKey]?.[genderKey]?.[courseKey];
-  }, [standards, age, gender, course, showAgeGroupStandards]);
+  }, [standards, age, gender, course]);
 
   return { standardsForSelectedFilters, isLoading };
 };

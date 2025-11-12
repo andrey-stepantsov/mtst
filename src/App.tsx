@@ -119,14 +119,13 @@ function App() {
     age: rawProfile?.age || '10&U',
     gender: rawProfile?.gender || 'Girls',
     selectedEvents: rawProfile?.selectedEvents || { SCY: [], LCM: [] },
-    showAgeGroupStandards: rawProfile?.showAgeGroupStandards || false,
   };
-  const { age, gender, selectedEvents, showAgeGroupStandards } = activeProfile;
+  const { age, gender, selectedEvents } = activeProfile;
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  const { standardsForSelectedFilters: scyStandards, isLoading: isLoadingScy } = useStandards(age, gender, 'SCY', showAgeGroupStandards);
-  const { standardsForSelectedFilters: lcmStandards, isLoading: isLoadingLcm } = useStandards(age, gender, 'LCM', showAgeGroupStandards);
+  const { standardsForSelectedFilters: scyStandards, isLoading: isLoadingScy } = useStandards(age, gender, 'SCY');
+  const { standardsForSelectedFilters: lcmStandards, isLoading: isLoadingLcm } = useStandards(age, gender, 'LCM');
 
   // Persist profiles
   useEffect(() => {
@@ -275,24 +274,6 @@ function App() {
     }
   };
 
-  const handleShowAgeGroupStandardsChange = (checked: boolean) => {
-    setProfiles(prevProfiles => {
-      const newProfiles = { ...prevProfiles };
-      const currentProfile = newProfiles[activeSwimmerName];
-      if (currentProfile) {
-        // If unchecking and the current age is '01-10', switch it to '10&U'
-        // to ensure the selection remains valid.
-        const newAge = !checked && currentProfile.age === '01-10' ? '10&U' : currentProfile.age;
-
-        newProfiles[activeSwimmerName] = {
-          ...currentProfile,
-          age: newAge,
-          showAgeGroupStandards: checked,
-        };
-      }
-      return newProfiles;
-    });
-  };
 
   const handleProfileConfirm = (profileUpdate: { swimmerName: string; age: string; gender: string }) => {
     const { swimmerName: newName, age: newAge, gender: newGender } = profileUpdate;
@@ -353,8 +334,6 @@ function App() {
         onSwitchProfile={handleSwitchProfile}
         onNewSwimmer={handleNewSwimmer}
         onDeleteSwimmer={handleDeleteSwimmer}
-        showAgeGroupStandards={showAgeGroupStandards}
-        onShowAgeGroupStandardsChange={handleShowAgeGroupStandardsChange}
       />
       <main className="main-content">
         <div className="card">
