@@ -8,15 +8,14 @@ export const useStandards = (age: string, gender: string, course: string) => {
   useEffect(() => {
     if (!age || !gender) return;
 
-    const ageGroupKey = age === "10&U" ? "10" : age.split('-')[0];
     const genderKey = gender === "Boys" ? "Male" : "Female";
 
     const fetchAllStandards = async () => {
       const coursesToFetch: ("SCY" | "LCM")[] = [];
-      if (standards[ageGroupKey]?.[genderKey]?.SCY === undefined) {
+      if (standards[age]?.[genderKey]?.SCY === undefined) {
         coursesToFetch.push("SCY");
       }
-      if (standards[ageGroupKey]?.[genderKey]?.LCM === undefined) {
+      if (standards[age]?.[genderKey]?.LCM === undefined) {
         coursesToFetch.push("LCM");
       }
 
@@ -29,7 +28,7 @@ export const useStandards = (age: string, gender: string, course: string) => {
         const promises = coursesToFetch.map(async (c) => {
           const baseUrl = import.meta.env.BASE_URL;
           const response = await fetch(
-            `${baseUrl}standards/${ageGroupKey}-${genderKey}-${c}.json`
+            `${baseUrl}standards/${age}-${genderKey}-${c}.json`
           );
           const data = response.ok ? await response.json() : [];
 
@@ -40,7 +39,7 @@ export const useStandards = (age: string, gender: string, course: string) => {
           }
           if (response.status === 404) {
             console.warn(
-              `No standards file found for: ${ageGroupKey}-${genderKey}-${c}.json`
+              `No standards file found for: ${age}-${genderKey}-${c}.json`
             );
           }
           return { courseKey: c, data };
@@ -49,15 +48,15 @@ export const useStandards = (age: string, gender: string, course: string) => {
         const results = await Promise.all(promises);
 
         setStandards((prev) => {
-          const newStandardsForGender = { ...prev[ageGroupKey]?.[genderKey] };
+          const newStandardsForGender = { ...prev[age]?.[genderKey] };
           results.forEach((result) => {
             newStandardsForGender[result.courseKey] = result.data;
           });
 
           return {
             ...prev,
-            [ageGroupKey]: {
-              ...prev[ageGroupKey],
+            [age]: {
+              ...prev[age],
               [genderKey]: newStandardsForGender,
             },
           };
@@ -73,10 +72,9 @@ export const useStandards = (age: string, gender: string, course: string) => {
   }, [age, gender, standards]);
 
   const standardsForSelectedFilters = useMemo((): StandardTime[] | undefined => {
-    const ageGroupKey = age === "10&U" ? "10" : age.split('-')[0];
     const genderKey = gender === "Boys" ? "Male" : "Female";
     const courseKey = course;
-    return standards[ageGroupKey]?.[genderKey]?.[courseKey];
+    return standards[age]?.[genderKey]?.[courseKey];
   }, [standards, age, gender, course]);
 
   return { standardsForSelectedFilters, isLoading };

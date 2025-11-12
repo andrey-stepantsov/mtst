@@ -116,7 +116,7 @@ function App() {
   // Derived state for the active profile
   const rawProfile = profiles[activeSwimmerName];
   const activeProfile = {
-    age: rawProfile?.age || '10&U',
+    age: rawProfile?.age || '10', // Default to '10' for single age
     gender: rawProfile?.gender || 'Girls',
     selectedEvents: rawProfile?.selectedEvents || { SCY: [], LCM: [] },
   };
@@ -248,7 +248,7 @@ function App() {
       }
 
       const newProfile = {
-        age: '10&U',
+        age: '10', // Default to '10' for single age
         gender: 'Girls',
         selectedEvents: { SCY: [], LCM: [] },
       };

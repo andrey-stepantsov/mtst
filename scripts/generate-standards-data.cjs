@@ -7,15 +7,6 @@ const INPUT_FILE_AGE_GROUP = path.join(STANDARDS_DIR, '2028-motivational-standar
 const INPUT_FILE_SINGLE_AGE = path.join(STANDARDS_DIR, '2028-motivational-standards-single-age.json');
 const OUTPUT_DIR = path.resolve(process.cwd(), 'public/standards');
 
-// Mappings from the new data format to the filename keys
-const ageGroupMapForGroupFile = {
-    '10 & under': '01-10',
-    '11-12': '11-12',
-    '13-14': '13-14',
-    '15-16': '15-16',
-    '17-18': '17-18',
-};
-
 const genderMap = {
     'Girls': 'Female',
     'Boys': 'Male',
@@ -25,19 +16,6 @@ async function generateStandardsData() {
     // Ensure the output directory exists
     await fs.promises.mkdir(OUTPUT_DIR, { recursive: true });
     console.log(`Ensured output directory exists: ${OUTPUT_DIR}`);
-
-    let ageGroupSourceData = [];
-    try {
-        const content = await fs.promises.readFile(INPUT_FILE_AGE_GROUP, 'utf8');
-        ageGroupSourceData = JSON.parse(content);
-        console.log(`Loaded age-group standards from ${INPUT_FILE_AGE_GROUP}`);
-    } catch (error) {
-        if (error.code !== 'ENOENT') {
-            console.error(`Error reading or parsing age-group standards file (${INPUT_FILE_AGE_GROUP}):`, error);
-        } else {
-            console.log(`Info: Age-group standards file not found, skipping. (${INPUT_FILE_AGE_GROUP})`);
-        }
-    }
 
     let singleAgeSourceData = [];
     try {
@@ -52,11 +30,10 @@ async function generateStandardsData() {
         }
     }
 
-    const groupedAgeGroupStandards = {};
     const groupedSingleAgeStandards = {};
 
     // Helper function to process and group records
-    const processAndGroupRecords = (records, groupedOutput, isSingleAge = false) => {
+    const processAndGroupRecords = (records, groupedOutput) => {
         for (const record of records) {
             const { age, gender, event, standards } = record;
 
@@ -64,7 +41,7 @@ async function generateStandardsData() {
             const course = eventParts.pop();
             const eventName = eventParts.join(' ');
 
-            const ageKey = age; // '10 & under' or '10'
+            const ageKey = age; // '10'
             const genderKey = genderMap[gender];
 
             if (!genderKey) {
@@ -96,34 +73,8 @@ async function generateStandardsData() {
         }
     };
 
-    // Process age-group data
-    processAndGroupRecords(ageGroupSourceData, groupedAgeGroupStandards, false);
-
     // Process single-age data
-    processAndGroupRecords(singleAgeSourceData, groupedSingleAgeStandards, true);
-
-    // Write the grouped age-group data to individual JSON files
-    for (const ageGroup in groupedAgeGroupStandards) {
-        for (const gender in groupedAgeGroupStandards[ageGroup]) {
-            for (const course in groupedAgeGroupStandards[ageGroup][gender]) {
-                const records = groupedAgeGroupStandards[ageGroup][gender][course];
-                const groupFileKey = ageGroupMapForGroupFile[ageGroup];
-
-                if (groupFileKey) {
-                    const groupOutputFileName = `${groupFileKey}-${gender}-${course}.json`;
-                    const groupOutputFilePath = path.join(OUTPUT_DIR, groupOutputFileName);
-                    try {
-                        await fs.promises.writeFile(groupOutputFilePath, JSON.stringify(records, null, 2), 'utf8');
-                        console.log(`Generated ${groupOutputFileName}`);
-                    } catch (error) {
-                        console.error(`Error writing ${groupOutputFileName}:`, error);
-                    }
-                } else {
-                    console.warn(`Skipping age group output for unmapped key: ${ageGroup}`);
-                }
-            }
-        }
-    }
+    processAndGroupRecords(singleAgeSourceData, groupedSingleAgeStandards);
 
     // Write the grouped single-age data to individual JSON files
     for (const singleAge in groupedSingleAgeStandards) {
