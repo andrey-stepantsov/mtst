@@ -21,3 +21,5 @@ export const ALL_EVENTS = [
   return lengthA - lengthB;
 });
 
+export const AGE_BRACKETS = ['10', '11', '12', '13', '14', '15', '16', '17', '18'];
+
