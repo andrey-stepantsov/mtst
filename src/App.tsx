@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { account } from './appwrite';
 import { Models } from 'appwrite';
+import './App.css';
 import './AppGrid.css';
 import './AppBar.css';
 import './Profile.css';
