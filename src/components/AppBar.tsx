@@ -1,4 +1,3 @@
-import { AGE_BRACKETS } from '../constants';
 import { Models } from 'appwrite';
 
 interface AppBarProps {
@@ -10,8 +9,10 @@ interface AppBarProps {
 export const AppBar = ({ user, onLogin, onLogout }: AppBarProps) => {
   return (
     <header className="app-bar">
-      <div className="app-bar-title">
-        <h1>My Swim Times</h1>
+      <div className="app-bar-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="5" r="1"></circle><path d="M9 20l3-6 3 6"></path><path d="M6 8l6 2 6-2"></path>
+        </svg>
       </div>
       <div className="app-bar-auth">
         {user ? (

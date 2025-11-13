@@ -13,10 +13,9 @@
   text-align: center;
 }
 
-.app-bar-title h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
+.app-bar-icon {
+  display: flex;
+  align-items: center;
 }
 
 .logo {
