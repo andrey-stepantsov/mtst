@@ -53,7 +53,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
-.new-content-area {
+.swimmer-details-container {
   width: 100%;
   max-width: 1280px; /* A common max-width for content sections */
   margin-bottom: 2rem;
@@ -106,7 +106,7 @@
   .card {
     background-color: #1a1a1a;
   }
-  .new-content-area {
+  .swimmer-details-container {
     background-color: #242424;
   }
   .swimmer-details span {

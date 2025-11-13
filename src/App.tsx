@@ -330,18 +330,20 @@ function App() {
         onDeleteSwimmer={handleDeleteSwimmer}
       />
       <main className="main-content">
-        <div className="new-content-area">
+        <div className="swimmer-details-container">
           <div className="swimmer-details">
             <select id="swimmer-select" value={activeSwimmerName} onChange={(e) => handleSwitchProfile(e.target.value)}>
               {Object.keys(profiles).map((name) => (
                 <option key={name} value={name}>{name}</option>
               ))}
             </select>
-            <span>{gender} / Age: {age}</span>
+            <span>
+              {gender} / Age: {age}
+            </span>
+            <button onClick={() => setIsProfileModalOpen(true)} className="icon-button edit-profile-button" title="Edit Profile">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+            </button>
           </div>
-          <button onClick={() => setIsProfileModalOpen(true)} className="icon-button edit-profile-button" title="Edit Profile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12"cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-          </button>
         </div>
         <div className="card">
           <div className="course-groups-container">
