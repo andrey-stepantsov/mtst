@@ -316,9 +316,6 @@ function App() {
     <>
       <AppBar
         swimmerName={activeSwimmerName}
-        age={age}
-        gender={gender}
-        onEdit={() => setIsProfileModalOpen(true)}
         swimmerNames={Object.keys(profiles)}
         onSwitchProfile={handleSwitchProfile}
         user={user}
@@ -337,7 +334,13 @@ function App() {
       />
       <main className="main-content">
         <div className="new-content-area">
-          {/* New content will go here */}
+          <div className="swimmer-details">
+            <h2>{activeSwimmerName}</h2>
+            <span>{gender} / Age: {age}</span>
+          </div>
+          <button onClick={() => setIsProfileModalOpen(true)} className="icon-button edit-profile-button" title="Edit Profile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12"cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+          </button>
         </div>
         <div className="card">
           <div className="course-groups-container">
