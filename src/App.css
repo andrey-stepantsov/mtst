@@ -13,6 +13,12 @@
   text-align: center;
 }
 
+.app-bar-title h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -76,6 +82,21 @@
   font-size: 0.9rem;
 }
 
+.swimmer-details select {
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  margin: 0 0 0.25rem 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  color: inherit;
+  width: 100%;
+}
+
 .read-the-docs {
   color: #888;
 }
@@ -89,5 +110,8 @@
   }
   .swimmer-details span {
     color: #aaa;
+  }
+  .swimmer-details select {
+    color: #fff;
   }
 }

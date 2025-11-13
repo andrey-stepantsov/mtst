@@ -2,23 +2,16 @@ import { AGE_BRACKETS } from '../constants';
 import { Models } from 'appwrite';
 
 interface AppBarProps {
-  swimmerName: string;
-  swimmerNames: string[];
-  onSwitchProfile: (name: string) => void;
   user: Models.User<Models.Preferences> | null;
   onLogin: () => void;
   onLogout: () => void;
 }
 
-export const AppBar = ({ swimmerName, swimmerNames, onSwitchProfile, user, onLogin, onLogout }: AppBarProps) => {
+export const AppBar = ({ user, onLogin, onLogout }: AppBarProps) => {
   return (
     <header className="app-bar">
-      <div className="app-bar-control">
-        <select id="app-bar-swimmer-select" value={swimmerName} onChange={(e) => onSwitchProfile(e.target.value)}>
-          {swimmerNames.map((name) => (
-            <option key={name} value={name}>{name}</option>
-          ))}
-        </select>
+      <div className="app-bar-title">
+        <h1>My Swim Times</h1>
       </div>
       <div className="app-bar-auth">
         {user ? (

@@ -315,9 +315,6 @@ function App() {
   return (
     <>
       <AppBar
-        swimmerName={activeSwimmerName}
-        swimmerNames={Object.keys(profiles)}
-        onSwitchProfile={handleSwitchProfile}
         user={user}
         onLogin={loginWithGoogle}
         onLogout={logout}
@@ -335,7 +332,11 @@ function App() {
       <main className="main-content">
         <div className="new-content-area">
           <div className="swimmer-details">
-            <h2>{activeSwimmerName}</h2>
+            <select id="swimmer-select" value={activeSwimmerName} onChange={(e) => handleSwitchProfile(e.target.value)}>
+              {Object.keys(profiles).map((name) => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </select>
             <span>{gender} / Age: {age}</span>
           </div>
           <button onClick={() => setIsProfileModalOpen(true)} className="icon-button edit-profile-button" title="Edit Profile">
