@@ -81,6 +81,7 @@
 .swimmer-details span {
   color: #888;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .swimmer-details select {
