@@ -68,7 +68,9 @@
 }
 
 .swimmer-details {
-  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .swimmer-details h2 {
@@ -87,13 +89,12 @@
   border: none;
   background-color: transparent;
   padding: 0;
-  margin: 0 0 0.25rem 0;
+  margin: 0;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   cursor: pointer;
   color: inherit;
-  width: 100%;
 }
 
 .read-the-docs {
