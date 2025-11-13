@@ -336,6 +336,9 @@ function App() {
         onDeleteSwimmer={handleDeleteSwimmer}
       />
       <main className="main-content">
+        <div className="new-content-area">
+          {/* New content will go here */}
+        </div>
         <div className="card">
           <div className="course-groups-container">
             <CourseEventGroup
