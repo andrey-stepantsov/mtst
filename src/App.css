@@ -52,11 +52,28 @@
   width: 100%;
   max-width: 1280px; /* A common max-width for content sections */
   margin-bottom: 2rem;
-  padding: 1rem 2rem;
+  padding: 0.5rem 2rem;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.swimmer-details {
+  text-align: left;
+}
+
+.swimmer-details h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.swimmer-details span {
+  color: #888;
+  font-size: 0.9rem;
 }
 
 .read-the-docs {
@@ -69,5 +86,8 @@
   }
   .new-content-area {
     background-color: #242424;
+  }
+  .swimmer-details span {
+    color: #aaa;
   }
 }
