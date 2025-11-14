@@ -47,7 +47,7 @@
 }
 
 .card {
-  padding: 2em;
+  padding: 2em 1em;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
@@ -57,7 +57,7 @@
   width: 100%;
   max-width: 1280px; /* A common max-width for content sections */
   margin-bottom: 2rem;
-  padding: 0.5rem 2rem;
+  padding: 0.5rem 1rem;
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
