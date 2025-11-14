@@ -19,6 +19,14 @@ export const AppBar = ({ user, onLogin, onLogout }: AppBarProps) => {
         </svg>
       </div>
       <div className="app-bar-auth">
+        <a href='https://ko-fi.com/J3J51OB6YV' target='_blank' rel="noopener noreferrer" className="kofi-link">
+          <img
+            height='36'
+            style={{ border: '0px', height: '36px' }}
+            src='https://storage.ko-fi.com/cdn/kofi5.png?v=6'
+            alt='Buy Me a Coffee at ko-fi.com'
+          />
+        </a>
         {user ? (
           <>
             <span className="user-name">{user.name}</span>
