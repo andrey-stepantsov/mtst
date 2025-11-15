@@ -3,6 +3,35 @@ import { SelectedEvent, StandardTime } from '../types';
 import { ALL_EVENTS } from '../constants';
 import { EventRow } from './EventRow';
 
+const strokeOrder = ['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly', 'Individual Medley'];
+
+const parseEventName = (eventName: string) => {
+    const parts = eventName.split(' ');
+    const distance = parseInt(parts[0], 10);
+    let stroke = parts.slice(1).join(' ');
+    if (stroke === 'IM') {
+        stroke = 'Individual Medley';
+    }
+    return { distance, stroke };
+};
+
+const eventSorter = (a: SelectedEvent, b: SelectedEvent) => {
+    const eventA = parseEventName(a.name);
+    const eventB = parseEventName(b.name);
+
+    if (eventA.distance !== eventB.distance) {
+        return eventA.distance - eventB.distance;
+    }
+
+    const strokeAIndex = strokeOrder.indexOf(eventA.stroke);
+    const strokeBIndex = strokeOrder.indexOf(eventB.stroke);
+
+    if (strokeAIndex === -1) return 1;
+    if (strokeBIndex === -1) return -1;
+
+    return strokeAIndex - strokeBIndex;
+};
+
 const getEventStandards = (eventName: string, standards: StandardTime[] | undefined): StandardTime | undefined => {
   return standards?.find(s => s.Event === eventName);
 };
@@ -85,6 +114,7 @@ export const CourseEventGroup = ({ course, standards, isLoading, selectedEvents,
     const [selectedEventInDropdown, setSelectedEventInDropdown] = useState('');
     const eventsForDropdown = useMemo(() => createEventsForDropdown(standards, selectedEvents), [standards, selectedEvents]);
     useUpdateDropdownSelection(eventsForDropdown, selectedEventInDropdown, setSelectedEventInDropdown);
+    const sortedEvents = useMemo(() => [...selectedEvents].sort(eventSorter), [selectedEvents]);
 
     const handleAddClick = () => {
         if (selectedEventInDropdown) {
@@ -118,7 +148,7 @@ export const CourseEventGroup = ({ course, standards, isLoading, selectedEvents,
             </div>
             <EventsGrid
                 course={course}
-                events={selectedEvents}
+                events={sortedEvents}
                 standards={standards}
                 handleRemoveEvent={onRemoveEvent}
                 handleTimeChange={onTimeChange}
