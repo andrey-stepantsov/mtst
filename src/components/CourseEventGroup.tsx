@@ -9,9 +9,19 @@ const parseEventName = (eventName: string) => {
     const parts = eventName.trim().split(/\s+/);
     const distance = parseInt(parts[0], 10);
     let stroke = parts.slice(1).join(' ');
-    if (stroke === 'IM') {
-        stroke = 'Individual Medley';
+
+    const strokeMap: { [key: string]: string } = {
+        'Free': 'Freestyle',
+        'Back': 'Backstroke',
+        'Breast': 'Breaststroke',
+        'Fly': 'Butterfly',
+        'IM': 'Individual Medley'
+    };
+
+    if (strokeMap[stroke]) {
+        stroke = strokeMap[stroke];
     }
+
     return { distance, stroke };
 };
 
