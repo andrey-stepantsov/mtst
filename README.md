@@ -1,7 +1,9 @@
 # LaneMetrics - Motivational Swimming Time Standards Tracker (MTST)
 
 ## Support Me
-[![ko-fi](https://raw.githubusercontent.com/andrey-stepantsov/mtst/refs/heads/main/public/lanemetrics-logo.png)](https://ko-fi.com/lanemetrics)
+
+[<img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' />](https://ko-fi.com/lanemetrics)
+
 A single-page application to help swimmers and coaches easily check swimming times against the official Motivational Time standards for various age groups and courses.
 
 ## Features
