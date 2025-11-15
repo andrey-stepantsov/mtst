@@ -13,6 +13,17 @@
   gap: 1.5rem;
 }
 
+.app-bar-icon {
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+}
+
+.app-bar-icon img {
+  width: 36px;
+  height: 36px;
+}
+
 .version-tag {
   font-size: 0.7rem;
   color: rgba(0, 0, 0, 0.5);
