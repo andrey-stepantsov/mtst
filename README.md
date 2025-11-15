@@ -1,6 +1,8 @@
-# Motivational Swimming Time Standards Calculator
+# LaneMetrics - Motivational Swimming Time Standards Tracker (MTST)
 
-A single-page application to help swimmers and coaches easily check swimming times against the official Montana Swimming time standards for various age groups and courses.
+## Support Me
+[![ko-fi](https://raw.githubusercontent.com/andrey-stepantsov/mtst/refs/heads/main/public/lanemetrics-logo.png)](https://ko-fi.com/lanemetrics)
+A single-page application to help swimmers and coaches easily check swimming times against the official Motivational Time standards for various age groups and courses.
 
 ## Features
 
