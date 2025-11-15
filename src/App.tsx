@@ -123,7 +123,7 @@ function App() {
   };
   const { age, gender, selectedEvents } = activeProfile;
 
-  const [sortOrder, setSortOrder] = useState('distanceStroke');
+  const [sortOrder, setSortOrder] = useState(() => localStorage.getItem('sortOrder') || 'distanceStroke');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const { standardsForSelectedFilters: scyStandards, isLoading: isLoadingScy } = useStandards(age, gender, 'SCY');
@@ -151,6 +151,11 @@ function App() {
   useEffect(() => {
     saveActiveSwimmerName(activeSwimmerName);
   }, [activeSwimmerName]);
+
+  // Persist sort order to localStorage
+  useEffect(() => {
+    localStorage.setItem('sortOrder', sortOrder);
+  }, [sortOrder]);
 
   // When profiles change (e.g., deletion), ensure activeSwimmerName is valid
   useEffect(() => {
