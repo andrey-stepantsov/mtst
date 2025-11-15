@@ -11,10 +11,10 @@ const parseEventName = (eventName: string) => {
     let stroke = parts.slice(1).join(' ');
 
     const strokeMap: { [key: string]: string } = {
-        'Free': 'Freestyle',
-        'Back': 'Backstroke',
-        'Breast': 'Breaststroke',
-        'Fly': 'Butterfly',
+        'FR': 'Freestyle',
+        'BK': 'Backstroke',
+        'BR': 'Breaststroke',
+        'FL': 'Butterfly',
         'IM': 'Individual Medley'
     };
 
