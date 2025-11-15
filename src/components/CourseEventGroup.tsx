@@ -15,17 +15,30 @@ const parseEventName = (eventName: string) => {
     return { distance, stroke };
 };
 
-const eventSorter = (a: SelectedEvent, b: SelectedEvent) => {
+const eventSorter = (a: SelectedEvent, b: SelectedEvent, sortOrder: string) => {
     const eventA = parseEventName(a.name);
     const eventB = parseEventName(b.name);
-
-    if (eventA.distance !== eventB.distance) {
-        return eventA.distance - eventB.distance;
-    }
 
     const strokeAIndex = strokeOrder.indexOf(eventA.stroke);
     const strokeBIndex = strokeOrder.indexOf(eventB.stroke);
 
+    if (sortOrder === 'strokeDistance') {
+        // Sort by stroke first
+        if (strokeAIndex !== strokeBIndex) {
+            if (strokeAIndex === -1) return 1;
+            if (strokeBIndex === -1) return -1;
+            return strokeAIndex - strokeBIndex;
+        }
+        // Then by distance
+        return eventA.distance - eventB.distance;
+    }
+
+    // Default: sort by distance first (distanceStroke)
+    if (eventA.distance !== eventB.distance) {
+        return eventA.distance - eventB.distance;
+    }
+
+    // Then by stroke
     if (strokeAIndex === -1) return 1;
     if (strokeBIndex === -1) return -1;
 
@@ -105,16 +118,17 @@ interface CourseEventGroupProps {
     standards: StandardTime[] | undefined;
     isLoading: boolean;
     selectedEvents: SelectedEvent[];
+    sortOrder: string;
     onAddEvent: (course: 'SCY' | 'LCM', eventName: string) => void;
     onRemoveEvent: (course: 'SCY' | 'LCM', eventToRemoveName: string) => void;
     onTimeChange: (course: 'SCY' | 'LCM', eventName: string, newTime: string) => void;
 }
 
-export const CourseEventGroup = ({ course, standards, isLoading, selectedEvents, onAddEvent, onRemoveEvent, onTimeChange }: CourseEventGroupProps) => {
+export const CourseEventGroup = ({ course, standards, isLoading, selectedEvents, sortOrder, onAddEvent, onRemoveEvent, onTimeChange }: CourseEventGroupProps) => {
     const [selectedEventInDropdown, setSelectedEventInDropdown] = useState('');
     const eventsForDropdown = useMemo(() => createEventsForDropdown(standards, selectedEvents), [standards, selectedEvents]);
     useUpdateDropdownSelection(eventsForDropdown, selectedEventInDropdown, setSelectedEventInDropdown);
-    const sortedEvents = useMemo(() => [...selectedEvents].sort(eventSorter), [selectedEvents]);
+    const sortedEvents = useMemo(() => [...selectedEvents].sort((a, b) => eventSorter(a, b, sortOrder)), [selectedEvents, sortOrder]);
 
     const handleAddClick = () => {
         if (selectedEventInDropdown) {

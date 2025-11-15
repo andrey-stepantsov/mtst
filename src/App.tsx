@@ -123,6 +123,7 @@ function App() {
   };
   const { age, gender, selectedEvents } = activeProfile;
 
+  const [sortOrder, setSortOrder] = useState('distanceStroke');
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const { standardsForSelectedFilters: scyStandards, isLoading: isLoadingScy } = useStandards(age, gender, 'SCY');
@@ -345,6 +346,13 @@ function App() {
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
             </button>
           </div>
+          <div className="view-controls">
+            <label htmlFor="sort-order-select">Sort by:</label>
+            <select id="sort-order-select" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+              <option value="distanceStroke">Distance, Stroke</option>
+              <option value="strokeDistance">Stroke, Distance</option>
+            </select>
+          </div>
         </div>
         <div className="card">
           <div className="course-groups-container">
@@ -353,6 +361,7 @@ function App() {
               standards={scyStandards}
               isLoading={isLoadingScy}
               selectedEvents={selectedEvents.SCY || []}
+              sortOrder={sortOrder}
               onAddEvent={handleAddEvent}
               onRemoveEvent={handleRemoveEvent}
               onTimeChange={handleTimeChange}
@@ -362,6 +371,7 @@ function App() {
               standards={lcmStandards}
               isLoading={isLoadingLcm}
               selectedEvents={selectedEvents.LCM || []}
+              sortOrder={sortOrder}
               onAddEvent={handleAddEvent}
               onRemoveEvent={handleRemoveEvent}
               onTimeChange={handleTimeChange}

@@ -98,6 +98,24 @@
   color: inherit;
 }
 
+.view-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.view-controls label {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.view-controls select {
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
 .read-the-docs {
   color: #888;
 }
@@ -113,6 +131,14 @@
     color: #aaa;
   }
   .swimmer-details select {
+    color: #fff;
+  }
+  .view-controls label {
+    color: #aaa;
+  }
+  .view-controls select {
+    background-color: #333;
+    border-color: #555;
     color: #fff;
   }
 }
