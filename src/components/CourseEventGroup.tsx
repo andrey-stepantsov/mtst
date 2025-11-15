@@ -22,12 +22,15 @@ const eventSorter = (a: SelectedEvent, b: SelectedEvent, sortOrder: string) => {
     const strokeAIndex = strokeOrder.indexOf(eventA.stroke);
     const strokeBIndex = strokeOrder.indexOf(eventB.stroke);
 
+    // Handle strokes not in the defined order by pushing them to the end.
+    const effectiveStrokeAIndex = strokeAIndex === -1 ? Infinity : strokeAIndex;
+    const effectiveStrokeBIndex = strokeBIndex === -1 ? Infinity : strokeBIndex;
+
     if (sortOrder === 'strokeDistance') {
         // Sort by stroke first
-        if (strokeAIndex !== strokeBIndex) {
-            if (strokeAIndex === -1) return 1;
-            if (strokeBIndex === -1) return -1;
-            return strokeAIndex - strokeBIndex;
+        const strokeComparison = effectiveStrokeAIndex - effectiveStrokeBIndex;
+        if (strokeComparison !== 0) {
+            return strokeComparison;
         }
         // Then by distance
         return eventA.distance - eventB.distance;
@@ -39,10 +42,7 @@ const eventSorter = (a: SelectedEvent, b: SelectedEvent, sortOrder: string) => {
     }
 
     // Then by stroke
-    if (strokeAIndex === -1) return 1;
-    if (strokeBIndex === -1) return -1;
-
-    return strokeAIndex - strokeBIndex;
+    return effectiveStrokeAIndex - effectiveStrokeBIndex;
 };
 
 const getEventStandards = (eventName: string, standards: StandardTime[] | undefined): StandardTime | undefined => {
