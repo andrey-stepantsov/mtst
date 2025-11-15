@@ -6,7 +6,7 @@ import { EventRow } from './EventRow';
 const strokeOrder = ['Freestyle', 'Backstroke', 'Breaststroke', 'Butterfly', 'Individual Medley'];
 
 const parseEventName = (eventName: string) => {
-    const parts = eventName.split(' ');
+    const parts = eventName.trim().split(/\s+/);
     const distance = parseInt(parts[0], 10);
     let stroke = parts.slice(1).join(' ');
     if (stroke === 'IM') {
