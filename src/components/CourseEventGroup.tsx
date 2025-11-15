@@ -126,7 +126,11 @@ interface CourseEventGroupProps {
 
 export const CourseEventGroup = ({ course, standards, isLoading, selectedEvents, sortOrder, onAddEvent, onRemoveEvent, onTimeChange }: CourseEventGroupProps) => {
     const [selectedEventInDropdown, setSelectedEventInDropdown] = useState('');
-    const eventsForDropdown = useMemo(() => createEventsForDropdown(standards, selectedEvents), [standards, selectedEvents]);
+    const eventsForDropdown = useMemo(() => {
+        const availableEvents = createEventsForDropdown(standards, selectedEvents);
+        // The sorter expects SelectedEvent objects, so we create dummy ones.
+        return availableEvents.sort((a, b) => eventSorter({ name: a, time: '' }, { name: b, time: '' }, sortOrder));
+    }, [standards, selectedEvents, sortOrder]);
     useUpdateDropdownSelection(eventsForDropdown, selectedEventInDropdown, setSelectedEventInDropdown);
     const sortedEvents = useMemo(() => [...selectedEvents].sort((a, b) => eventSorter(a, b, sortOrder)), [selectedEvents, sortOrder]);
 
