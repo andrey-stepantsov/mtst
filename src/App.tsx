@@ -347,10 +347,10 @@ function App() {
             </button>
           </div>
           <div className="view-controls">
-            <label htmlFor="sort-order-select">Sort by:</label>
+            <label htmlFor="sort-order-select">Sort:</label>
             <select id="sort-order-select" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-              <option value="distanceStroke">Distance, Stroke</option>
-              <option value="strokeDistance">Stroke, Distance</option>
+              <option value="distanceStroke">Distance</option>
+              <option value="strokeDistance">Stroke</option>
             </select>
           </div>
         </div>
