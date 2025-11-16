@@ -174,7 +174,7 @@
   min-width: 8.0ch; /* Set minimum width to roughly 8.5 characters */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
   text-align: center;
-  padding: 5px;
+  padding: 5px 2px;
   border: 1px solid #ccc;
   border-radius: 3px;
   background-color: #fff;
